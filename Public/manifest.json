@@ -1,6 +1,8 @@
 {
   "name": "Train Departures - Live Departure Boards",
   "short_name": "Train Departures",
+  "scope": "/Index/",
+  "start_url": "/Index/",
   "description": "Live UK train departure boards",
     "display":      "fullscreen", 
     "orientation":  "landscape",

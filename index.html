@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="canonical" href="https://traindepartures.glitch.me/" />
+    <meta name="description" content="UK Rail Stations Departure boards" />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:title" content="Train Departures" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://traindepartures.glitch.me/" />
+    <meta
+      property="og:description"
+      content="UK Rail Stations Departure boards"
+    />
+    <meta
+      property="og:image"
+      content="https://cdn.glitch.com/605e2a51-d45f-4d87-a285-9410ad350515%2Fhello-website-social.png?v=1616712748147"
+    />
+    <meta name="twitter:card" content="summary" />
+
+    <link rel="manifest" href="manifest.json" />
+
+    <title>Train Departures</title>
+
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+
+    <!-- OpenGraph/Social sharing -->
+    <meta name="description" content="Live Train Departure Boards" />
+    <meta name="og:description" content="Live Train Departure Boards" />
+    <meta
+      property="og:image"
+      content="https://cdn.glitch.global/1f6014a4-47b1-4576-800e-056d7440d140/TDico.png?v=1693903203676"
+    />
+    <meta property="og:title" content="Train Departures" />
+    <meta name="twitter:card" content="summary" />
+    <link
+      rel="icon"
+      href="https://cdn.glitch.global/1f6014a4-47b1-4576-800e-056d7440d140/TDico.png?v=1693903203676"
+    />
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+
+    <!-- PWA setup - update public/sw.js if you add your own assets like a new .css file -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <script src="index.js" async defer></script>
+
+    <style>
+      @font-face {
+        font-family: "dot-matrix";
+        src: url("https://cdn.glitch.global/1f6014a4-47b1-4576-800e-056d7440d140/Dot-Matrix.ttf.woff?v=1693896010358");
+      }
+
+      h1 {
+        font-size: 48px;
+      }
+      body {
+        background-color: #000;
+        color: #ff0;
+        font-family: "dot-matrix";
+        font-size: 12px;
+      }
+
+      .popup-overlay {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+      }
+
+      .popup-content {
+        background-color: #111111;
+        padding: 20px;
+        border-radius: 5px;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px;
+      }
+
+      td {
+        border: 1px solid #000000;
+        padding: 8px;
+        text-align: left;
+        vertical-align: top;
+        background-color: #5c471a;
+        color: #ffcb30;
+      }
+
+      th {
+        background-color: #000000;
+        border: 1px solid #000000;
+        padding: 8px;
+        text-align: left;
+        color: #ffffff;
+      }
+
+      .cancel-reason {
+        color: #ffcb30;
+      }
+
+      #current-time {
+        text-align: center;
+        margin-top: 10px;
+        color: #ffcb30;
+      }
+
+      #button {
+        margin-bottom: 20px; /* Add some space between the button and the images */
+        background-color: #000; /* Black background color */
+        color: #8b0000; /* Deep red text color */
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Train Departures</h1>
+
+    <p>Welcome to train departures</p>
+
+    <p>
+      This is a simple website that can show the upcoming departures for the
+      chosen station. Its been made to resemble the departure boards on the UK
+      rail network to a certain extent. To use the departure board you will need
+      to enter the CRS code that applies to the station you wish to view - a
+      great source of this information is the
+      <a href="http://www.railwaycodes.org.uk/crs/crs0.shtm">RailWayCodes</a>
+      website. Other sources are available
+    </p>
+
+    <a href="DEPARTURES.html"><button>Load Departure Board</button></a>
+    <script></script>
+  </body>
+</html>

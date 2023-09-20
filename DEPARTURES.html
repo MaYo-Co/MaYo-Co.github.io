@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+    <title>Train Departures</title>
+  
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+    <!-- OpenGraph/Social sharing -->
+    <meta name="description" content="Live Train Departure Boards" />
+    <meta
+      name="og:description"
+      content="Live Train Departure Boards"
+    />
+    <meta
+      property="og:image"
+      content="https://cdn.glitch.global/1f6014a4-47b1-4576-800e-056d7440d140/TDico.png?v=1693903203676"
+    />
+    <meta property="og:title" content="Train Departures" />
+    <meta name="twitter:card" content="summary" />
+    <link
+      rel="icon"
+      href="https://cdn.glitch.global/1f6014a4-47b1-4576-800e-056d7440d140/TDico.png?v=1693903203676"
+    />
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+
+    <!-- PWA setup - update public/sw.js if you add your own assets like a new .css file -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <script src="index.js" async defer></script>  
+  
+    <style>
+      
+@font-face {
+        font-family: "dot-matrix";
+        src: url("https://cdn.glitch.global/1f6014a4-47b1-4576-800e-056d7440d140/Dot-Matrix.ttf.woff?v=1693896010358");
+      }  
+    
+      
+      h1 {
+            font-size: 36px;
+        
+      }
+      
+      
+        body {
+            background-color: #000;
+            color: #FF0;
+            font-family: 'dot-matrix';
+            font-size: 42px;
+            margin: 0; /* Remove default margin */
+            padding: 0; /* Remove default padding */
+        }
+
+        .popup-overlay {
+            display: flex;
+            justify-content: center;
+            align-items: top;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background-color: #111111;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+            max-width: 800px; /* Adjust the maximum width as needed */
+            margin: 20px auto; /* Center the table */
+        }
+
+        td {
+            border: 1px solid #000000;
+            padding: 4px;
+            text-align: left;
+			vertical-align: top;
+            background-color: #5c471a;
+            color: #ffcb30;
+            font-size: 36px;
+        }
+
+        th {
+            background-color: #000000;
+            border: 1px solid #000000;
+            padding: 8px;
+            text-align: left;
+            color: #FFFFFF;
+            font-size: 24px;
+        }
+      
+
+        .cancel-reason {
+
+            color: #ffcb30;
+        }
+        
+        #current-time {
+            text-align: center;
+            margin-top: 0px;
+            margin-bottom: 40px;
+            color: #ffcb30;
+            font-size: 36px;
+
+}
+    </style>
+</head>
+<body>
+    <h1>Departures</h1>
+    <div id="popup" class="popup-overlay">
+        <div class="popup-content">
+            <label for="crsInput">Enter CRS Code:</label>
+            <input type="text" id="crsInput">
+            <button id="setCrsButton">Set CRS Code</button>
+        </div>
+    </div>
+    <div id="departures" style="display: none;"></div>
+    <div id="current-time"></div>
+    <button id="openPopup">Amend CRS code</button>
+  
+    <script>
+        const departuresContainer = document.getElementById('departures');
+        const popup = document.getElementById('popup');
+        const openPopupButton = document.getElementById('openPopup');
+        const crsInput = document.getElementById('crsInput');
+        const setCrsButton = document.getElementById('setCrsButton');
+        const currentTimeContainer = document.getElementById('current-time');
+
+        let crsCode = 'KGX'; // Default CRS code
+
+        openPopupButton.addEventListener('click', () => {
+            popup.style.display = 'block';
+        });
+
+        setCrsButton.addEventListener('click', () => {
+            crsCode = crsInput.value.trim();
+            fetchDepartures();
+            popup.style.display = 'none';
+        });
+
+        async function fetchDepartures() {
+            const apiUrl = `https://huxley2.azurewebsites.net/departures/${crsCode}/5`;
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                departuresContainer.innerHTML = '';
+                const table = document.createElement('table');
+                table.innerHTML = `
+                    <tr>
+                        <th>Time</th>
+                        <th>Destination</th>
+                        <th>Plat</th>
+                        <th>Expected</th>
+                    </tr>
+                `;
+                
+                data.trainServices.forEach(service => {
+                    const std = service.std;
+                    const destination = service.destination[0].locationName;
+                    const platform = service.platform || '-';
+                    const etd = service.etd;
+                    const cancelReason = service.cancelReason;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${std}</td>
+                        <td>${destination}${cancelReason ? `<br><span class="cancel-reason">${cancelReason}</span>` : ''}</td>
+                        <td>${platform}</td>
+                        <td>${cancelReason ? 'Cancelled' : etd}</td>
+                    `;
+                    
+                    table.appendChild(row);
+                });
+                
+                departuresContainer.appendChild(table);
+                departuresContainer.style.display = 'block'; // Display the departures table
+                
+                // Display current time
+                setInterval(() => {
+                    const currentTime = new Date();
+                    const hours = currentTime.getHours().toString().padStart(2, '0');
+                    const minutes = currentTime.getMinutes().toString().padStart(2, '0');
+                    const seconds = currentTime.getSeconds().toString().padStart(2, '0');                    
+                    const currentTimeString = `${hours}:${minutes}:${seconds}`;
+                    currentTimeContainer.innerHTML = `${currentTimeString}`;
+                }, 1000);
+
+                // Refresh data every 5 minutes
+                setTimeout(fetchDepartures, 5 * 60 * 1000);
+            } catch (error) {
+                departuresContainer.innerHTML = '<p>An error occurred while fetching data.</p>';
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        fetchDepartures();
+      
+      
+// SCRIPT FOR WAKELOCK GAIN AND RELEASE      
+        let wakeLock = null;
+
+        // Function to request a wake lock
+        async function requestWakeLock() {
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+                console.log('Wake lock is active.');
+            } catch (err) {
+                console.error('Error requesting wake lock:', err);
+            }
+        }
+
+        // Function to release the wake lock
+        function releaseWakeLock() {
+            if (wakeLock !== null) {
+                wakeLock.release();
+                wakeLock = null;
+                console.log('Wake lock is released.');
+            }
+        }
+
+        // Listen for the page unload event to release the wake lock
+        window.addEventListener('unload', releaseWakeLock);
+
+        // Call the requestWakeLock function when the page is loaded
+        window.addEventListener('load', requestWakeLock);
+      
+    </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 {
   "name": "Train Departures - Live Departure Boards",
   "short_name": "Train Departures",
+  "id": "/TD1"
   "scope": "/Index/",
   "start_url": "/",
   "description": "Live UK train departure boards",

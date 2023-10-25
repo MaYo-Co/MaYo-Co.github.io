@@ -4,7 +4,7 @@
   "scope": "/Index/",
   "start_url": "/",
   "description": "Live UK train departure boards",
-  "display": "fullscreen",
+  "display": "standalone",
   "orientation": "landscape",
   "icons": [
     {

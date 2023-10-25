@@ -47,6 +47,13 @@
 
     <script src="/Public/index.js" async defer></script>
 
+    <script>
+      if (typeof navigator.serviceWorker !== 'undefined') {
+        navigator.serviceWorker.register('service-worker.js')
+      }
+    </script>
+
+    
     <style>
       @font-face {
         font-family: "dot matrix";

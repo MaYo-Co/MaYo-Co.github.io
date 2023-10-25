@@ -1,10 +1,8 @@
-[
-  {
-    "relation": ["delegate_permission/common.handle_all_urls"],
-    "target": {
-      "namespace": "android_app",
-      "package_name": "xyz.appmaker.vejzpt",
-      "sha256_cert_fingerprints": ["0A:2B:F3:63:88:11:E7:5F:64:EA:BC:EB:BD:F6:52:75:34:60:C4:1D:34:CD:88:75:F4:FD:6C:7D:E8:F5:F2:73"]
-    }
-  }
-]
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.mayo_co.twa",
+        "sha256_cert_fingerprints": ["B2:DA:A0:54:BD:67:9C:52:02:74:28:CA:0B:55:BF:FA:07:A4:79:DE:A8:9D:82:8E:E2:58:F2:65:DD:04:FA:B0"]
+      }
+    }]

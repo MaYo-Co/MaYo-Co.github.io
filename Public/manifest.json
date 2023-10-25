@@ -1,7 +1,6 @@
 {
   "name": "Train Departures - Live Departure Boards",
   "short_name": "Train Departures",
-  "id": "/TD1"
   "scope": "/Index/",
   "start_url": "/",
   "description": "Live UK train departure boards",
@@ -33,8 +32,8 @@
       "purpose": "any"
     }
   ],
-  "background_color": "#FFFFFF",
-  "theme_color": "#FFFFFF",
+  "background_color": "#000000",
+  "theme_color": "#ffaf32",
   "prefer_related_applications": false,
   "categories": [
     "lifestyle",
@@ -62,5 +61,12 @@
       "sizes": "750x1334",
       "type": "image/png"
     }
+  ],
+  "id": "TD1",
+  "dir": "auto",
+  "lang": "en",
+  "display_override": [
+    "fullscreen",
+    "window-controls-overlay"
   ]
 }

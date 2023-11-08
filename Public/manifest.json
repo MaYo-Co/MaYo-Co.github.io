@@ -64,9 +64,5 @@
   ],
   "id": "TD1",
   "dir": "auto",
-  "lang": "en",
-  "display_override": [
-    "fullscreen",
-    "window-controls-overlay"
-  ]
+  "lang": "en"
 }

@@ -10,7 +10,7 @@ self.addEventListener("install", (e) => {
     // Give the cache a name
     caches.open("glitch-hello-installable-cache").then((cache) => {
       // Cache the homepage and stylesheets - add any assets you want to cache!
-      return cache.addAll(["/", "/Public/style.css", "/Public/index.js"]);
+      return cache.addAll(["/", "/style.css", "/index.js"]);
     })
   );
 });

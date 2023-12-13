@@ -1,6 +1,6 @@
 [{
       "relation": ["delegate_permission/common.handle_all_urls"],
-      "href": "public/manifest.json",
+      "href": "manifest.json",
       "target": {
         "namespace": "android_app",
         "package_name": "io.github.mayo_co.twa",

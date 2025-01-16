@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Metro Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centers everything horizontally */
+            background-color: black; 
+            color: orange; 
+            font-family: Arial, sans-serif; 
+            text-align: center;
+        }
+
+        #title {
+            text-align: center;
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        #map-container {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            width: 100%;
+            height: 90vh; /* Ensures map takes up 70% of the viewport height */
+            display: flex;
+            justify-content: center; /* Centers the map horizontally */
+            align-items: center; /* Aligns map to the top instead of bottom */
+            /*margin-bottom: 10px; /* Adjust this if needed */
+        }
+
+        #map {
+            width: 95%;
+            height: 100%;
+            border: 2px solid rgb(224, 185, 9);
+        }
+
+        #controls {
+            margin: 20px 0; 
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        label {
+            color: orange; 
+            font-weight: bold; 
+            margin-right: 10px;
+        }
+
+        select {
+            background-color: black; 
+            color: orange; 
+            font-weight: bold; 
+            border: 2px solid orange; 
+            padding: 5px;
+        }
+
+        #trainData {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: orange;
+            padding: 10px;
+            border: 2px solid orange;
+            display: inline-block; 
+        }
+    </style>
+</head>
+<body>
+    <h1 id="title">Live Tyne and Wear Metro Map</h1>
+    <p style="text-align: center;">Real-time updates on metro train locations.</p>
+    <p style="text-align: center;">Not associated with Nexus in any way but using their public api.</p>
+
+    <div id="controls">
+        <label for="station">Select Station:</label>
+        <select id="station">
+            <option value="">--Select Station--</option>
+            <option value='APT'> Airport</option>
+            <option value='BFT'> Bank Foot</option>
+            <option value='BDE'> Bede</option>
+            <option value='BTN'> Benton</option>
+            <option value='BYW'> Brockley Whins</option>
+            <option value='BYK'> Byker</option>
+            <option value='CAL'> Callerton Parkway</option>
+            <option value='CEN'> Central</option>
+            <option value='CHI'> Chichester</option>
+            <option value='CRD'> Chillingham Road</option>
+            <option value='CUL'> Cullercoats</option>
+            <option value='EBO'> East Boldon</option>
+            <option value='FAW'> Fawdon</option>
+            <option value='FGT'> Fellgate</option>
+            <option value='FEL'> Felling</option>
+            <option value='FLE'> Four Lane Ends</option>
+            <option value='GHD'> Gateshead</option>
+            <option value='GST'> Gateshead Stadium</option>
+            <option value='HDR'> Hadrian Road</option>
+            <option value='HAY'> Haymarket</option>
+            <option value='HEB'> Hebburn</option>
+            <option value='HTH'> Heworth</option>
+            <option value='HOW'> Howdon</option>
+            <option value='ILF'> Ilford Road</option>
+            <option value='JAR'> Jarrow</option>
+            <option value='JES'> Jesmond</option>
+            <option value='KSP'> Kingston Park</option>
+            <option value='LBN'> Longbenton</option>
+            <option value='MAN'> Manors</option>
+            <option value='MWL'> Meadow Well</option>
+            <option value='MLF'> Millfield</option>
+            <option value='MSN'> Monkseaton</option>
+            <option value='MTW'> Monument</option>
+            <option value='MTS'> Monument</option>
+            <option value='NSH'> North Shields</option>
+            <option value='NPK'> Northumberland Park</option>
+            <option value='PAL'> Pallion</option>
+            <option value='PMV'> Palmersville</option>
+            <option value='PLI'> Park Lane</option>
+            <option value='PLW'> Pelaw</option>
+            <option value='PCM'> Percy Main</option>
+            <option value='RGC'> Regent Centre</option>
+            <option value='SBN'> Seaburn</option>
+            <option value='SMR'> Shiremoor</option>
+            <option value='SMD'> Simonside</option>
+            <option value='SGF'> South Gosforth</option>
+            <option value='SHL'> South Hylton</option>
+            <option value='SSS'> South Shields</option>
+            <option value='SJM'> St James</option>
+            <option value='MSP'> St Peters</option>
+            <option value='SFC'> Stadium of Light</option>
+            <option value='SUN'> Sunderland</option>
+            <option value='TDK'> Tyne Dock</option>
+            <option value='TYN'> Tynemouth</option>
+            <option value='UNI'> University</option>
+            <option value='WKG'> Walkergate</option>
+            <option value='WSD'> Wallsend</option>
+            <option value='WBR'> Wansbeck Road</option>
+            <option value='WJS'> West Jesmond</option>
+            <option value='WMN'> West Monkseaton</option>
+            <option value='WTL'> Whitley Bay</option>            
+        </select>
+
+        <label for="direction">Select Direction:</label>
+        <select id="direction">
+            <option value="">--Select Platform--</option>
+            <option value="1">Platform 1</option>
+            <option value="2">Platform 2</option>
+        </select>
+    </div>
+    <div id="currentTime" style="color: orange; font-weight: bold;"></div>
+    <div id="trainData">Train data will appear here.</div>
+
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Metro map image
+        const imageUrl = 'https://www.nexus.org.uk/themes/custom/nexus/images/metro-map-large.jpg';
+
+        // Image dimensions (actual size of the metro map image)
+        const imageWidth = 2000;
+        const imageHeight = 944;
+
+        // Define Leaflet map with Simple CRS (non-geographic)
+        const map = L.map('map', {
+            crs: L.CRS.Simple,
+            minZoom: -2,
+            maxZoom: 2,
+            zoom: 1
+        });
+
+        // Set bounds based on the image dimensions
+        const imageBounds = [[0, 0], [imageHeight, imageWidth]];
+        L.imageOverlay(imageUrl, imageBounds).addTo(map);
+        map.fitBounds(imageBounds);
+
+
+        // Keep aspect ratio and adjust map bounds on window resize
+        function resizeMap() {
+            const windowAspectRatio = window.innerWidth / window.innerHeight;
+            const imageAspectRatio = imageWidth / imageHeight;
+
+            if (windowAspectRatio > imageAspectRatio) {
+                // Window is wider than the image, fit height
+                map.fitBounds([[0, 0], [imageHeight, imageHeight * windowAspectRatio]]);
+            } else {
+                // Window is taller than the image, fit width
+                map.fitBounds([[0, 0], [imageWidth / windowAspectRatio, imageWidth]]);
+            }
+        }
+
+        window.addEventListener('resize', resizeMap);
+        resizeMap(); // Initial call to fit the map correctly
+
+        // Station coordinate lookup table
+        const stationCoordinates = [
+            { tlc: 'SJM', lastEventLocation: 'St James Platform 1', lastEvent: 'ARRIVED', xPercent: 33.55, yPercent: 60.7 },
+            { tlc: 'MTW', lastEventLocation: 'Monument Platform 4', lastEvent: 'ARRIVED', xPercent: 36.1, yPercent: 60.7 },
+            { tlc: 'MAN', lastEventLocation: 'Manors Platform 1', lastEvent: 'ARRIVED', xPercent: 44.8, yPercent: 60.7 },
+            { tlc: 'BYK', lastEventLocation: 'Byker Platform 1', lastEvent: 'ARRIVED', xPercent: 49.3, yPercent: 60.7 },
+            { tlc: 'CRD', lastEventLocation: 'Chillingham Road Platform 1', lastEvent: 'ARRIVED', xPercent: 53.85, yPercent: 60.7 },
+            { tlc: 'WKG', lastEventLocation: 'Walkergate Platform 1', lastEvent: 'ARRIVED', xPercent: 58.2, yPercent: 60.7 },
+            { tlc: 'WSD', lastEventLocation: 'Wallsend Platform 1', lastEvent: 'ARRIVED', xPercent: 62.85, yPercent: 60.7 },
+            { tlc: 'HDR', lastEventLocation: 'Hadrian Road Platform 1', lastEvent: 'ARRIVED', xPercent: 67.3, yPercent: 60.7 },
+            { tlc: 'HOW', lastEventLocation: 'Howdon Platform 1', lastEvent: 'ARRIVED', xPercent: 72.05, yPercent: 60.7 },
+            { tlc: 'PCM', lastEventLocation: 'Percy Main Platform 1', lastEvent: 'ARRIVED', xPercent: 76.45, yPercent: 60.7 },
+            { tlc: 'MWL', lastEventLocation: 'Meadow Well Platform 1', lastEvent: 'ARRIVED', xPercent: 80.8, yPercent: 60.7 },
+            { tlc: 'NSH', lastEventLocation: 'North Shields Platform 1', lastEvent: 'ARRIVED', xPercent: 85.45, yPercent: 60.7 },
+            { tlc: 'TYN', lastEventLocation: 'Tynemouth Platform 1', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 65.04 },
+            { tlc: 'CUL', lastEventLocation: 'Cullercoats Platform 1', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 72.46 },
+            { tlc: 'WTL', lastEventLocation: 'Whitley Bay Platform 1', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 79.98 },
+            { tlc: 'MSN', lastEventLocation: 'Monkseaton Platform 1', lastEvent: 'ARRIVED', xPercent: 81.4, yPercent: 84.32 },
+            { tlc: 'WMN', lastEventLocation: 'West Monkseaton Platform 1', lastEvent: 'ARRIVED', xPercent: 75, yPercent: 84.32 },
+            { tlc: 'SMR', lastEventLocation: 'Shiremoor Platform 1', lastEvent: 'ARRIVED', xPercent: 68.55, yPercent: 84.32 },
+            { tlc: 'NPK', lastEventLocation: 'Northumberland Park Platform 1', lastEvent: 'ARRIVED', xPercent: 62.15, yPercent: 84.32 },
+            { tlc: 'PMV', lastEventLocation: 'Palmersville Platform 1', lastEvent: 'ARRIVED', xPercent: 55.55, yPercent: 84.32 },
+            { tlc: 'BTN', lastEventLocation: 'Benton Platform 1', lastEvent: 'ARRIVED', xPercent: 49.1, yPercent: 84.32 },
+            { tlc: 'FLE', lastEventLocation: 'Four Lane Ends Platform 1', lastEvent: 'ARRIVED', xPercent: 42.65, yPercent: 84.32 },
+            { tlc: 'LBN', lastEventLocation: 'Longbenton Platform 1', lastEvent: 'ARRIVED', xPercent: 36.3, yPercent: 84.32 },
+            { tlc: 'HEB', lastEventLocation: 'Hebburn Platform 1', lastEvent: 'ARRIVED', xPercent: 65.6, yPercent: 47.35 },
+            { tlc: 'JAR', lastEventLocation: 'Jarrow Platform 1', lastEvent: 'ARRIVED', xPercent: 68.9, yPercent: 47.35 },
+            { tlc: 'BDE', lastEventLocation: 'Bede Platform 1', lastEvent: 'ARRIVED', xPercent: 72.05, yPercent: 47.35 },
+            { tlc: 'SMD', lastEventLocation: 'Simonside Platform 1', lastEvent: 'ARRIVED', xPercent: 75.6, yPercent: 47.35 },
+            { tlc: 'TDK', lastEventLocation: 'Tyne Dock Platform 1', lastEvent: 'ARRIVED', xPercent: 78.85, yPercent: 47.35 },
+            { tlc: 'CHI', lastEventLocation: 'Chichester Platform 1', lastEvent: 'ARRIVED', xPercent: 82.2, yPercent: 47.35 },
+            { tlc: 'SSS', lastEventLocation: 'South Shields Platform 1', lastEvent: 'ARRIVED', xPercent: 85.45, yPercent: 47.35 },
+            { tlc: 'APT', lastEventLocation: 'Airport Platform 1', lastEvent: 'ARRIVED', xPercent: 8.65, yPercent: 84.32 },
+            { tlc: 'CAL', lastEventLocation: 'Callerton Parkway Platform 1', lastEvent: 'ARRIVED', xPercent: 11.95, yPercent: 84.32 },
+            { tlc: 'BFT', lastEventLocation: 'Bank Foot Platform 1', lastEvent: 'ARRIVED', xPercent: 15.2, yPercent: 84.32 },
+            { tlc: 'KSP', lastEventLocation: 'Kingston Park Platform 1', lastEvent: 'ARRIVED', xPercent: 18.35, yPercent: 84.32 },
+            { tlc: 'FAW', lastEventLocation: 'Fawdon Platform 1', lastEvent: 'ARRIVED', xPercent: 21.65, yPercent: 84.32 },
+            { tlc: 'WBR', lastEventLocation: 'Wansbeck Road Platform 1', lastEvent: 'ARRIVED', xPercent: 24.85, yPercent: 84.32 },
+            { tlc: 'RGC', lastEventLocation: 'Regent Centre Platform 1', lastEvent: 'ARRIVED', xPercent: 28.1, yPercent: 84.32 },
+            { tlc: 'SGF', lastEventLocation: 'South Gosforth Platform 1', lastEvent: 'ARRIVED', xPercent: 30.65, yPercent: 80.83 },
+            { tlc: 'ILF', lastEventLocation: 'Ilford Road Platform 1', lastEvent: 'ARRIVED', xPercent: 31.65, yPercent: 77.12 },
+            { tlc: 'WJS', lastEventLocation: 'West Jesmond Platform 1', lastEvent: 'ARRIVED', xPercent: 32.75, yPercent: 72.99 },
+            { tlc: 'JES', lastEventLocation: 'Jesmond Platform 1', lastEvent: 'ARRIVED', xPercent: 33.8, yPercent: 69.28 },
+            { tlc: 'HAY', lastEventLocation: 'Haymarket Platform 1', lastEvent: 'ARRIVED', xPercent: 34.9, yPercent: 65.36 },
+            { tlc: 'MTS', lastEventLocation: 'Monument Platform 1', lastEvent: 'ARRIVED', xPercent: 36.1, yPercent: 60.7 },
+            { tlc: 'CEN', lastEventLocation: 'Central Platform 1', lastEvent: 'ARRIVED', xPercent: 37.45, yPercent: 55.93 },
+            { tlc: 'GHD', lastEventLocation: 'Gateshead Platform 1', lastEvent: 'ARRIVED', xPercent: 42.65, yPercent: 46.82 },
+            { tlc: 'GST', lastEventLocation: 'Gateshead Stadium Platform 1', lastEvent: 'ARRIVED', xPercent: 47.4, yPercent: 46.82 },
+            { tlc: 'FEL', lastEventLocation: 'Felling Platform 1', lastEvent: 'ARRIVED', xPercent: 51.95, yPercent: 46.82 },
+            { tlc: 'HTH', lastEventLocation: 'Heworth Platform 1', lastEvent: 'ARRIVED', xPercent: 57.05, yPercent: 46.82 },
+            { tlc: 'PLW', lastEventLocation: 'Pelaw Platform 1', lastEvent: 'ARRIVED', xPercent: 61.1, yPercent: 46.82 },
+            { tlc: 'FGT', lastEventLocation: 'Fellgate Platform 1', lastEvent: 'ARRIVED', xPercent: 66.75, yPercent: 38.35 },
+            { tlc: 'BYW', lastEventLocation: 'Brockley Whins Platform 1', lastEvent: 'ARRIVED', xPercent: 72.85, yPercent: 38.35 },
+            { tlc: 'EBO', lastEventLocation: 'East Boldon Platform 1', lastEvent: 'ARRIVED', xPercent: 78.35, yPercent: 38.35 },
+            { tlc: 'SBN', lastEventLocation: 'Seaburn Platform 1', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 35.38 },
+            { tlc: 'SFC', lastEventLocation: 'Stadium of Light Platform 1', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 31.78 },
+            { tlc: 'MSP', lastEventLocation: 'St Peters Platform 1', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 27.86 },
+            { tlc: 'SUN', lastEventLocation: 'Sunderland Platform 3', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 19.6 },
+            { tlc: 'PLI', lastEventLocation: 'Park Lane Platform 1', lastEvent: 'ARRIVED', xPercent: 85.45, yPercent: 14.94 },
+            { tlc: 'UNI', lastEventLocation: 'University Platform 1', lastEvent: 'ARRIVED', xPercent: 81.4, yPercent: 14.94 },
+            { tlc: 'MLF', lastEventLocation: 'Millfield Platform 1', lastEvent: 'ARRIVED', xPercent: 77.1, yPercent: 14.94 },
+            { tlc: 'PAL', lastEventLocation: 'Pallion Platform 1', lastEvent: 'ARRIVED', xPercent: 72.85, yPercent: 14.94 },
+            { tlc: 'SHL', lastEventLocation: 'South Hylton Platform 1', lastEvent: 'ARRIVED', xPercent: 68.5, yPercent: 14.94 },
+            { tlc: 'SJM', lastEventLocation: 'St James Platform 1', lastEvent: 'APPROACHING', xPercent: 34.85, yPercent: 60.7 },
+            { tlc: 'MTW', lastEventLocation: 'Monument Platform 3', lastEvent: 'APPROACHING', xPercent: 34.85, yPercent: 60.7 },
+            { tlc: 'MAN', lastEventLocation: 'Manors Platform 1', lastEvent: 'APPROACHING', xPercent: 40.45, yPercent: 60.7 },
+            { tlc: 'BYK', lastEventLocation: 'Byker Platform 1', lastEvent: 'APPROACHING', xPercent: 47.05, yPercent: 60.7 },
+            { tlc: 'CRD', lastEventLocation: 'Chillingham Road Platform 1', lastEvent: 'APPROACHING', xPercent: 51.6, yPercent: 60.7 },
+            { tlc: 'WKG', lastEventLocation: 'Walkergate Platform 1', lastEvent: 'APPROACHING', xPercent: 56.05, yPercent: 60.7 },
+            { tlc: 'WSD', lastEventLocation: 'Wallsend Platform 1', lastEvent: 'APPROACHING', xPercent: 60.55, yPercent: 60.7 },
+            { tlc: 'HDR', lastEventLocation: 'Hadrian Road Platform 1', lastEvent: 'APPROACHING', xPercent: 65.1, yPercent: 60.7 },
+            { tlc: 'HOW', lastEventLocation: 'Howdon Platform 1', lastEvent: 'APPROACHING', xPercent: 69.7, yPercent: 60.7 },
+            { tlc: 'PCM', lastEventLocation: 'Percy Main Platform 1', lastEvent: 'APPROACHING', xPercent: 74.25, yPercent: 60.7 },
+            { tlc: 'MWL', lastEventLocation: 'Meadow Well Platform 1', lastEvent: 'APPROACHING', xPercent: 78.65, yPercent: 60.7 },
+            { tlc: 'NSH', lastEventLocation: 'North Shields Platform 1', lastEvent: 'APPROACHING', xPercent: 83.15, yPercent: 60.7 },
+            { tlc: 'TYN', lastEventLocation: 'Tynemouth Platform 1', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 38.24 },
+            { tlc: 'CUL', lastEventLocation: 'Cullercoats Platform 1', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 31.25 },
+            { tlc: 'WTL', lastEventLocation: 'Whitley Bay Platform 1', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 23.52 },
+            { tlc: 'MSN', lastEventLocation: 'Monkseaton Platform 1', lastEvent: 'APPROACHING', xPercent: 84.85, yPercent: 84.32 },
+            { tlc: 'WMN', lastEventLocation: 'West Monkseaton Platform 1', lastEvent: 'APPROACHING', xPercent: 78.2, yPercent: 84.32 },
+            { tlc: 'SMR', lastEventLocation: 'Shiremoor Platform 1', lastEvent: 'APPROACHING', xPercent: 71.8, yPercent: 84.32 },
+            { tlc: 'NPK', lastEventLocation: 'Northumberland Park Platform 1', lastEvent: 'APPROACHING', xPercent: 65.35, yPercent: 84.32 },
+            { tlc: 'PMV', lastEventLocation: 'Palmersville Platform 1', lastEvent: 'APPROACHING', xPercent: 58.85, yPercent: 84.32 },
+            { tlc: 'BTN', lastEventLocation: 'Benton Platform 1', lastEvent: 'APPROACHING', xPercent: 52.35, yPercent: 84.32 },
+            { tlc: 'FLE', lastEventLocation: 'Four Lane Ends Platform 1', lastEvent: 'APPROACHING', xPercent: 45.9, yPercent: 84.32 },
+            { tlc: 'LBN', lastEventLocation: 'Longbenton Platform 1', lastEvent: 'APPROACHING', xPercent: 39.5, yPercent: 84.32 },
+            { tlc: 'HEB', lastEventLocation: 'Hebburn Platform 1', lastEvent: 'APPROACHING', xPercent: 63.5, yPercent: 47.35 },
+            { tlc: 'JAR', lastEventLocation: 'Jarrow Platform 1', lastEvent: 'APPROACHING', xPercent: 67.25, yPercent: 47.35 },
+            { tlc: 'BDE', lastEventLocation: 'Bede Platform 1', lastEvent: 'APPROACHING', xPercent: 70.5, yPercent: 47.35 },
+            { tlc: 'SMD', lastEventLocation: 'Simonside Platform 1', lastEvent: 'APPROACHING', xPercent: 73.85, yPercent: 47.35 },
+            { tlc: 'TDK', lastEventLocation: 'Tyne Dock Platform 1', lastEvent: 'APPROACHING', xPercent: 77.25, yPercent: 47.35 },
+            { tlc: 'CHI', lastEventLocation: 'Chichester Platform 1', lastEvent: 'APPROACHING', xPercent: 80.55, yPercent: 47.35 },
+            { tlc: 'SSS', lastEventLocation: 'South Shields Platform 1', lastEvent: 'APPROACHING', xPercent: 83.85, yPercent: 47.35 },
+            { tlc: 'APT', lastEventLocation: 'Airport Platform 1', lastEvent: 'APPROACHING', xPercent: 10.3, yPercent: 84.32 },
+            { tlc: 'CAL', lastEventLocation: 'Callerton Parkway Platform 1', lastEvent: 'APPROACHING', xPercent: 10.3, yPercent: 84.32 },
+            { tlc: 'BFT', lastEventLocation: 'Bank Foot Platform 1', lastEvent: 'APPROACHING', xPercent: 13.6, yPercent: 84.32 },
+            { tlc: 'KSP', lastEventLocation: 'Kingston Park Platform 1', lastEvent: 'APPROACHING', xPercent: 16.8, yPercent: 84.32 },
+            { tlc: 'FAW', lastEventLocation: 'Fawdon Platform 1', lastEvent: 'APPROACHING', xPercent: 20, yPercent: 84.32 },
+            { tlc: 'WBR', lastEventLocation: 'Wansbeck Road Platform 1', lastEvent: 'APPROACHING', xPercent: 23.25, yPercent: 84.32 },
+            { tlc: 'RGC', lastEventLocation: 'Regent Centre Platform 1', lastEvent: 'APPROACHING', xPercent: 26.5, yPercent: 84.32 },
+            { tlc: 'SGF', lastEventLocation: 'South Gosforth Platform 1', lastEvent: 'APPROACHING', xPercent: 30.25, yPercent: 83.26 },
+            { tlc: 'ILF', lastEventLocation: 'Ilford Road Platform 1', lastEvent: 'APPROACHING', xPercent: 31.1, yPercent: 79.03 },
+            { tlc: 'WJS', lastEventLocation: 'West Jesmond Platform 1', lastEvent: 'APPROACHING', xPercent: 32.25, yPercent: 74.89 },
+            { tlc: 'JES', lastEventLocation: 'Jesmond Platform 1', lastEvent: 'APPROACHING', xPercent: 33.3, yPercent: 71.19 },
+            { tlc: 'HAY', lastEventLocation: 'Haymarket Platform 1', lastEvent: 'APPROACHING', xPercent: 34.4, yPercent: 67.37 },
+            { tlc: 'MTS', lastEventLocation: 'Monument Platform 1', lastEvent: 'APPROACHING', xPercent: 35.8, yPercent: 62.61 },
+            { tlc: 'CEN', lastEventLocation: 'Central Platform 1', lastEvent: 'APPROACHING', xPercent: 36.85, yPercent: 57.84 },
+            { tlc: 'GHD', lastEventLocation: 'Gateshead Platform 1', lastEvent: 'APPROACHING', xPercent: 39.1, yPercent: 50.21 },
+            { tlc: 'GST', lastEventLocation: 'Gateshead Stadium Platform 1', lastEvent: 'APPROACHING', xPercent: 45.05, yPercent: 46.82 },
+            { tlc: 'FEL', lastEventLocation: 'Felling Platform 1', lastEvent: 'APPROACHING', xPercent: 49.7, yPercent: 46.82 },
+            { tlc: 'HTH', lastEventLocation: 'Heworth Platform 1', lastEvent: 'APPROACHING', xPercent: 54.5, yPercent: 46.82 },
+            { tlc: 'PLW', lastEventLocation: 'Pelaw Platform 1', lastEvent: 'APPROACHING', xPercent: 59.1, yPercent: 46.82 },
+            { tlc: 'FGT', lastEventLocation: 'Fellgate Platform 1', lastEvent: 'APPROACHING', xPercent: 63.95, yPercent: 42.37 },
+            { tlc: 'BYW', lastEventLocation: 'Brockley Whins Platform 1', lastEvent: 'APPROACHING', xPercent: 69.8, yPercent: 38.35 },
+            { tlc: 'EBO', lastEventLocation: 'East Boldon Platform 1', lastEvent: 'APPROACHING', xPercent: 75.6, yPercent: 38.35 },
+            { tlc: 'SBN', lastEventLocation: 'Seaburn Platform 1', lastEvent: 'APPROACHING', xPercent: 82.7, yPercent: 38.35 },
+            { tlc: 'SFC', lastEventLocation: 'Stadium of Light Platform 1', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 33.69 },
+            { tlc: 'MSP', lastEventLocation: 'St Peters Platform 1', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 70.23 },
+            { tlc: 'SUN', lastEventLocation: 'Sunderland Platform 2', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 76.17 },
+            { tlc: 'PLI', lastEventLocation: 'Park Lane Platform 1', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 83.58 },
+            { tlc: 'UNI', lastEventLocation: 'University Platform 1', lastEvent: 'APPROACHING', xPercent: 83.9, yPercent: 14.94 },
+            { tlc: 'MLF', lastEventLocation: 'Millfield Platform 1', lastEvent: 'APPROACHING', xPercent: 79.15, yPercent: 14.94 },
+            { tlc: 'PAL', lastEventLocation: 'Pallion Platform 1', lastEvent: 'APPROACHING', xPercent: 75.1, yPercent: 14.94 },
+            { tlc: 'SHL', lastEventLocation: 'South Hylton Platform 1', lastEvent: 'APPROACHING', xPercent: 70.65, yPercent: 14.94 },
+            { tlc: 'SJM', lastEventLocation: 'St James Platform 1', lastEvent: 'DEPARTED', xPercent: 34.85, yPercent: 60.7 },
+            { tlc: 'MTW', lastEventLocation: 'Monument Platform 3', lastEvent: 'DEPARTED', xPercent: 40.1, yPercent: 60.7 },
+            { tlc: 'MAN', lastEventLocation: 'Manors Platform 1', lastEvent: 'DEPARTED', xPercent: 47.05, yPercent: 60.7 },
+            { tlc: 'BYK', lastEventLocation: 'Byker Platform 1', lastEvent: 'DEPARTED', xPercent: 51.6, yPercent: 60.7 },
+            { tlc: 'CRD', lastEventLocation: 'Chillingham Road Platform 1', lastEvent: 'DEPARTED', xPercent: 56.05, yPercent: 60.7 },
+            { tlc: 'WKG', lastEventLocation: 'Walkergate Platform 1', lastEvent: 'DEPARTED', xPercent: 60.55, yPercent: 60.7 },
+            { tlc: 'WSD', lastEventLocation: 'Wallsend Platform 1', lastEvent: 'DEPARTED', xPercent: 65.1, yPercent: 60.7 },
+            { tlc: 'HDR', lastEventLocation: 'Hadrian Road Platform 1', lastEvent: 'DEPARTED', xPercent: 69.7, yPercent: 60.7 },
+            { tlc: 'HOW', lastEventLocation: 'Howdon Platform 1', lastEvent: 'DEPARTED', xPercent: 74.25, yPercent: 60.7 },
+            { tlc: 'PCM', lastEventLocation: 'Percy Main Platform 1', lastEvent: 'DEPARTED', xPercent: 78.65, yPercent: 60.7 },
+            { tlc: 'MWL', lastEventLocation: 'Meadow Well Platform 1', lastEvent: 'DEPARTED', xPercent: 83.15, yPercent: 60.7 },
+            { tlc: 'NSH', lastEventLocation: 'North Shields Platform 1', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 38.24 },
+            { tlc: 'TYN', lastEventLocation: 'Tynemouth Platform 1', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 31.25 },
+            { tlc: 'CUL', lastEventLocation: 'Cullercoats Platform 1', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 23.52 },
+            { tlc: 'WTL', lastEventLocation: 'Whitley Bay Platform 1', lastEvent: 'DEPARTED', xPercent: 84.85, yPercent: 84.32 },
+            { tlc: 'MSN', lastEventLocation: 'Monkseaton Platform 1', lastEvent: 'DEPARTED', xPercent: 78.2, yPercent: 84.32 },
+            { tlc: 'WMN', lastEventLocation: 'West Monkseaton Platform 1', lastEvent: 'DEPARTED', xPercent: 71.8, yPercent: 84.32 },
+            { tlc: 'SMR', lastEventLocation: 'Shiremoor Platform 1', lastEvent: 'DEPARTED', xPercent: 65.35, yPercent: 84.32 },
+            { tlc: 'NPK', lastEventLocation: 'Northumberland Park Platform 1', lastEvent: 'DEPARTED', xPercent: 58.85, yPercent: 84.32 },
+            { tlc: 'PMV', lastEventLocation: 'Palmersville Platform 1', lastEvent: 'DEPARTED', xPercent: 52.35, yPercent: 84.32 },
+            { tlc: 'BTN', lastEventLocation: 'Benton Platform 1', lastEvent: 'DEPARTED', xPercent: 45.9, yPercent: 84.32 },
+            { tlc: 'FLE', lastEventLocation: 'Four Lane Ends Platform 1', lastEvent: 'DEPARTED', xPercent: 39.5, yPercent: 84.32 },
+            { tlc: 'LBN', lastEventLocation: 'Longbenton Platform 1', lastEvent: 'DEPARTED', xPercent: 63.5, yPercent: 47.35 },
+            { tlc: 'HEB', lastEventLocation: 'Hebburn Platform 1', lastEvent: 'DEPARTED', xPercent: 67.25, yPercent: 47.35 },
+            { tlc: 'JAR', lastEventLocation: 'Jarrow Platform 1', lastEvent: 'DEPARTED', xPercent: 70.5, yPercent: 47.35 },
+            { tlc: 'BDE', lastEventLocation: 'Bede Platform 1', lastEvent: 'DEPARTED', xPercent: 73.85, yPercent: 47.35 },
+            { tlc: 'SMD', lastEventLocation: 'Simonside Platform 1', lastEvent: 'DEPARTED', xPercent: 77.25, yPercent: 47.35 },
+            { tlc: 'TDK', lastEventLocation: 'Tyne Dock Platform 1', lastEvent: 'DEPARTED', xPercent: 80.55, yPercent: 47.35 },
+            { tlc: 'CHI', lastEventLocation: 'Chichester Platform 1', lastEvent: 'DEPARTED', xPercent: 83.85, yPercent: 47.35 },
+            { tlc: 'SSS', lastEventLocation: 'South Shields Platform 1', lastEvent: 'DEPARTED', xPercent: 83.85, yPercent: 47.35 },
+            { tlc: 'APT', lastEventLocation: 'Airport Platform 1', lastEvent: 'DEPARTED', xPercent: 13.6, yPercent: 84.32 },
+            { tlc: 'CAL', lastEventLocation: 'Callerton Parkway Platform 1', lastEvent: 'DEPARTED', xPercent: 13.6, yPercent: 84.32 },
+            { tlc: 'BFT', lastEventLocation: 'Bank Foot Platform 1', lastEvent: 'DEPARTED', xPercent: 16.8, yPercent: 84.32 },
+            { tlc: 'KSP', lastEventLocation: 'Kingston Park Platform 1', lastEvent: 'DEPARTED', xPercent: 20, yPercent: 84.32 },
+            { tlc: 'FAW', lastEventLocation: 'Fawdon Platform 1', lastEvent: 'DEPARTED', xPercent: 23.25, yPercent: 84.32 },
+            { tlc: 'WBR', lastEventLocation: 'Wansbeck Road Platform 1', lastEvent: 'DEPARTED', xPercent: 26.5, yPercent: 84.32 },
+            { tlc: 'RGC', lastEventLocation: 'Regent Centre Platform 1', lastEvent: 'DEPARTED', xPercent: 30.25, yPercent: 83.26 },
+            { tlc: 'SGF', lastEventLocation: 'South Gosforth Platform 1', lastEvent: 'DEPARTED', xPercent: 31.1, yPercent: 79.03 },
+            { tlc: 'ILF', lastEventLocation: 'Ilford Road Platform 1', lastEvent: 'DEPARTED', xPercent: 32.25, yPercent: 74.89 },
+            { tlc: 'WJS', lastEventLocation: 'West Jesmond Platform 1', lastEvent: 'DEPARTED', xPercent: 33.3, yPercent: 71.19 },
+            { tlc: 'JES', lastEventLocation: 'Jesmond Platform 1', lastEvent: 'DEPARTED', xPercent: 34.4, yPercent: 67.37 },
+            { tlc: 'HAY', lastEventLocation: 'Haymarket Platform 1', lastEvent: 'DEPARTED', xPercent: 35.8, yPercent: 62.61 },
+            { tlc: 'MTS', lastEventLocation: 'Monument Platform 1', lastEvent: 'DEPARTED', xPercent: 36.85, yPercent: 57.84 },
+            { tlc: 'CEN', lastEventLocation: 'Central Platform 1', lastEvent: 'DEPARTED', xPercent: 39.1, yPercent: 50.21 },
+            { tlc: 'GHD', lastEventLocation: 'Gateshead Platform 1', lastEvent: 'DEPARTED', xPercent: 45.05, yPercent: 46.82 },
+            { tlc: 'GST', lastEventLocation: 'Gateshead Stadium Platform 1', lastEvent: 'DEPARTED', xPercent: 49.7, yPercent: 46.82 },
+            { tlc: 'FEL', lastEventLocation: 'Felling Platform 1', lastEvent: 'DEPARTED', xPercent: 54.5, yPercent: 46.82 },
+            { tlc: 'HTH', lastEventLocation: 'Heworth Platform 1', lastEvent: 'DEPARTED', xPercent: 59.1, yPercent: 46.82 },
+            { tlc: 'PLW', lastEventLocation: 'Pelaw Platform 1', lastEvent: 'DEPARTED', xPercent: 63.95, yPercent: 42.37 },
+            { tlc: 'FGT', lastEventLocation: 'Fellgate Platform 1', lastEvent: 'DEPARTED', xPercent: 69.8, yPercent: 38.35 },
+            { tlc: 'BYW', lastEventLocation: 'Brockley Whins Platform 1', lastEvent: 'DEPARTED', xPercent: 75.6, yPercent: 38.35 },
+            { tlc: 'EBO', lastEventLocation: 'East Boldon Platform 1', lastEvent: 'DEPARTED', xPercent: 82.7, yPercent: 38.35 },
+            { tlc: 'SBN', lastEventLocation: 'Seaburn Platform 1', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 33.69 },
+            { tlc: 'SFC', lastEventLocation: 'Stadium of Light Platform 1', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 70.23 },
+            { tlc: 'MSP', lastEventLocation: 'St Peters Platform 1', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 76.17 },
+            { tlc: 'SUN', lastEventLocation: 'Sunderland Platform 2', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 83.58 },
+            { tlc: 'PLI', lastEventLocation: 'Park Lane Platform 1', lastEvent: 'DEPARTED', xPercent: 83.9, yPercent: 14.94 },
+            { tlc: 'UNI', lastEventLocation: 'University Platform 1', lastEvent: 'DEPARTED', xPercent: 79.15, yPercent: 14.94 },
+            { tlc: 'MLF', lastEventLocation: 'Millfield Platform 1', lastEvent: 'DEPARTED', xPercent: 75.1, yPercent: 14.94 },
+            { tlc: 'PAL', lastEventLocation: 'Pallion Platform 1', lastEvent: 'DEPARTED', xPercent: 70.65, yPercent: 14.94 },
+            { tlc: 'SHL', lastEventLocation: 'South Hylton Platform 1', lastEvent: 'DEPARTED', xPercent: 70.65, yPercent: 14.94 },
+            { tlc: 'SJM', lastEventLocation: 'St James Platform 2', lastEvent: 'APPROACHING', xPercent: 34.85, yPercent: 60.7 },
+            { tlc: 'MTW', lastEventLocation: 'Monument Platform 4', lastEvent: 'APPROACHING', xPercent: 40.1, yPercent: 60.7 },
+            { tlc: 'MAN', lastEventLocation: 'Manors Platform 2', lastEvent: 'APPROACHING', xPercent: 47.05, yPercent: 60.7 },
+            { tlc: 'BYK', lastEventLocation: 'Byker Platform 2', lastEvent: 'APPROACHING', xPercent: 51.6, yPercent: 60.7 },
+            { tlc: 'CRD', lastEventLocation: 'Chillingham Road Platform 2', lastEvent: 'APPROACHING', xPercent: 56.05, yPercent: 60.7 },
+            { tlc: 'WKG', lastEventLocation: 'Walkergate Platform 2', lastEvent: 'APPROACHING', xPercent: 60.55, yPercent: 60.7 },
+            { tlc: 'WSD', lastEventLocation: 'Wallsend Platform 2', lastEvent: 'APPROACHING', xPercent: 65.1, yPercent: 60.7 },
+            { tlc: 'HDR', lastEventLocation: 'Hadrian Road Platform 2', lastEvent: 'APPROACHING', xPercent: 69.7, yPercent: 60.7 },
+            { tlc: 'HOW', lastEventLocation: 'Howdon Platform 2', lastEvent: 'APPROACHING', xPercent: 74.25, yPercent: 60.7 },
+            { tlc: 'PCM', lastEventLocation: 'Percy Main Platform 2', lastEvent: 'APPROACHING', xPercent: 78.65, yPercent: 60.7 },
+            { tlc: 'MWL', lastEventLocation: 'Meadow Well Platform 2', lastEvent: 'APPROACHING', xPercent: 83.15, yPercent: 60.7 },
+            { tlc: 'NSH', lastEventLocation: 'North Shields Platform 2', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 38.24 },
+            { tlc: 'TYN', lastEventLocation: 'Tynemouth Platform 2', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 31.25 },
+            { tlc: 'CUL', lastEventLocation: 'Cullercoats Platform 2', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 23.52 },
+            { tlc: 'WTL', lastEventLocation: 'Whitley Bay Platform 2', lastEvent: 'APPROACHING', xPercent: 84.85, yPercent: 84.32 },
+            { tlc: 'MSN', lastEventLocation: 'Monkseaton Platform 2', lastEvent: 'APPROACHING', xPercent: 78.2, yPercent: 84.32 },
+            { tlc: 'WMN', lastEventLocation: 'West Monkseaton Platform 2', lastEvent: 'APPROACHING', xPercent: 71.8, yPercent: 84.32 },
+            { tlc: 'SMR', lastEventLocation: 'Shiremoor Platform 2', lastEvent: 'APPROACHING', xPercent: 65.35, yPercent: 84.32 },
+            { tlc: 'NPK', lastEventLocation: 'Northumberland Park Platform 2', lastEvent: 'APPROACHING', xPercent: 58.85, yPercent: 84.32 },
+            { tlc: 'PMV', lastEventLocation: 'Palmersville Platform 2', lastEvent: 'APPROACHING', xPercent: 52.35, yPercent: 84.32 },
+            { tlc: 'BTN', lastEventLocation: 'Benton Platform 2', lastEvent: 'APPROACHING', xPercent: 45.9, yPercent: 84.32 },
+            { tlc: 'FLE', lastEventLocation: 'Four Lane Ends Platform 2', lastEvent: 'APPROACHING', xPercent: 39.5, yPercent: 84.32 },
+            { tlc: 'LBN', lastEventLocation: 'Longbenton Platform 2', lastEvent: 'APPROACHING', xPercent: 63.5, yPercent: 47.35 },
+            { tlc: 'HEB', lastEventLocation: 'Hebburn Platform 2', lastEvent: 'APPROACHING', xPercent: 67.25, yPercent: 47.35 },
+            { tlc: 'JAR', lastEventLocation: 'Jarrow Platform 2', lastEvent: 'APPROACHING', xPercent: 70.5, yPercent: 47.35 },
+            { tlc: 'BDE', lastEventLocation: 'Bede Platform 2', lastEvent: 'APPROACHING', xPercent: 73.85, yPercent: 47.35 },
+            { tlc: 'SMD', lastEventLocation: 'Simonside Platform 2', lastEvent: 'APPROACHING', xPercent: 77.25, yPercent: 47.35 },
+            { tlc: 'TDK', lastEventLocation: 'Tyne Dock Platform 2', lastEvent: 'APPROACHING', xPercent: 80.55, yPercent: 47.35 },
+            { tlc: 'CHI', lastEventLocation: 'Chichester Platform 2', lastEvent: 'APPROACHING', xPercent: 83.85, yPercent: 47.35 },
+            { tlc: 'SSS', lastEventLocation: 'South Shields Platform 2', lastEvent: 'APPROACHING', xPercent: 83.85, yPercent: 47.35 },
+            { tlc: 'APT', lastEventLocation: 'Airport Platform 2', lastEvent: 'APPROACHING', xPercent: 13.6, yPercent: 84.32 },
+            { tlc: 'CAL', lastEventLocation: 'Callerton Parkway Platform 2', lastEvent: 'APPROACHING', xPercent: 13.6, yPercent: 84.32 },
+            { tlc: 'BFT', lastEventLocation: 'Bank Foot Platform 2', lastEvent: 'APPROACHING', xPercent: 16.8, yPercent: 84.32 },
+            { tlc: 'KSP', lastEventLocation: 'Kingston Park Platform 2', lastEvent: 'APPROACHING', xPercent: 20, yPercent: 84.32 },
+            { tlc: 'FAW', lastEventLocation: 'Fawdon Platform 2', lastEvent: 'APPROACHING', xPercent: 23.25, yPercent: 84.32 },
+            { tlc: 'WBR', lastEventLocation: 'Wansbeck Road Platform 2', lastEvent: 'APPROACHING', xPercent: 26.5, yPercent: 84.32 },
+            { tlc: 'RGC', lastEventLocation: 'Regent Centre Platform 2', lastEvent: 'APPROACHING', xPercent: 30.25, yPercent: 83.26 },
+            { tlc: 'SGF', lastEventLocation: 'South Gosforth Platform 2', lastEvent: 'APPROACHING', xPercent: 31.1, yPercent: 79.03 },
+            { tlc: 'ILF', lastEventLocation: 'Ilford Road Platform 2', lastEvent: 'APPROACHING', xPercent: 32.25, yPercent: 74.89 },
+            { tlc: 'WJS', lastEventLocation: 'West Jesmond Platform 2', lastEvent: 'APPROACHING', xPercent: 33.3, yPercent: 71.19 },
+            { tlc: 'JES', lastEventLocation: 'Jesmond Platform 2', lastEvent: 'APPROACHING', xPercent: 34.4, yPercent: 67.37 },
+            { tlc: 'HAY', lastEventLocation: 'Haymarket Platform 2', lastEvent: 'APPROACHING', xPercent: 35.8, yPercent: 62.61 },
+            { tlc: 'MTS', lastEventLocation: 'Monument Platform 2', lastEvent: 'APPROACHING', xPercent: 36.85, yPercent: 57.84 },
+            { tlc: 'CEN', lastEventLocation: 'Central Platform 2', lastEvent: 'APPROACHING', xPercent: 39.1, yPercent: 50.21 },
+            { tlc: 'GHD', lastEventLocation: 'Gateshead Platform 2', lastEvent: 'APPROACHING', xPercent: 45.05, yPercent: 46.82 },
+            { tlc: 'GST', lastEventLocation: 'Gateshead Stadium Platform 2', lastEvent: 'APPROACHING', xPercent: 49.7, yPercent: 46.82 },
+            { tlc: 'FEL', lastEventLocation: 'Felling Platform 2', lastEvent: 'APPROACHING', xPercent: 54.5, yPercent: 46.82 },
+            { tlc: 'HTH', lastEventLocation: 'Heworth Platform 2', lastEvent: 'APPROACHING', xPercent: 59.1, yPercent: 46.82 },
+            { tlc: 'PLW', lastEventLocation: 'Pelaw Platform 2', lastEvent: 'APPROACHING', xPercent: 63.95, yPercent: 42.37 },
+            { tlc: 'FGT', lastEventLocation: 'Fellgate Platform 2', lastEvent: 'APPROACHING', xPercent: 69.8, yPercent: 38.35 },
+            { tlc: 'BYW', lastEventLocation: 'Brockley Whins Platform 2', lastEvent: 'APPROACHING', xPercent: 75.6, yPercent: 38.35 },
+            { tlc: 'EBO', lastEventLocation: 'East Boldon Platform 2', lastEvent: 'APPROACHING', xPercent: 82.7, yPercent: 38.35 },
+            { tlc: 'SBN', lastEventLocation: 'Seaburn Platform 2', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 33.69 },
+            { tlc: 'SFC', lastEventLocation: 'Stadium of Light Platform 2', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 70.23 },
+            { tlc: 'MSP', lastEventLocation: 'St Peters Platform 2', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 76.17 },
+            { tlc: 'SUN', lastEventLocation: 'Sunderland Platform 3', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 83.58 },
+            { tlc: 'PLI', lastEventLocation: 'Park Lane Platform 2', lastEvent: 'APPROACHING', xPercent: 83.9, yPercent: 14.94 },
+            { tlc: 'UNI', lastEventLocation: 'University Platform 2', lastEvent: 'APPROACHING', xPercent: 79.15, yPercent: 14.94 },
+            { tlc: 'MLF', lastEventLocation: 'Millfield Platform 2', lastEvent: 'APPROACHING', xPercent: 75.1, yPercent: 14.94 },
+            { tlc: 'PAL', lastEventLocation: 'Pallion Platform 2', lastEvent: 'APPROACHING', xPercent: 70.65, yPercent: 14.94 },
+            { tlc: 'SHL', lastEventLocation: 'South Hylton Platform 2', lastEvent: 'APPROACHING', xPercent: 70.65, yPercent: 14.94 },
+            { tlc: 'SJM', lastEventLocation: 'St James Platform 2', lastEvent: 'DEPARTED', xPercent: 34.85, yPercent: 60.7 },
+            { tlc: 'MTW', lastEventLocation: 'Monument Platform 4', lastEvent: 'DEPARTED', xPercent: 34.85, yPercent: 60.7 },
+            { tlc: 'MAN', lastEventLocation: 'Manors Platform 2', lastEvent: 'DEPARTED', xPercent: 40.45, yPercent: 60.7 },
+            { tlc: 'BYK', lastEventLocation: 'Byker Platform 2', lastEvent: 'DEPARTED', xPercent: 47.05, yPercent: 60.7 },
+            { tlc: 'CRD', lastEventLocation: 'Chillingham Road Platform 2', lastEvent: 'DEPARTED', xPercent: 51.6, yPercent: 60.7 },
+            { tlc: 'WKG', lastEventLocation: 'Walkergate Platform 2', lastEvent: 'DEPARTED', xPercent: 56.05, yPercent: 60.7 },
+            { tlc: 'WSD', lastEventLocation: 'Wallsend Platform 2', lastEvent: 'DEPARTED', xPercent: 60.55, yPercent: 60.7 },
+            { tlc: 'HDR', lastEventLocation: 'Hadrian Road Platform 2', lastEvent: 'DEPARTED', xPercent: 65.1, yPercent: 60.7 },
+            { tlc: 'HOW', lastEventLocation: 'Howdon Platform 2', lastEvent: 'DEPARTED', xPercent: 69.7, yPercent: 60.7 },
+            { tlc: 'PCM', lastEventLocation: 'Percy Main Platform 2', lastEvent: 'DEPARTED', xPercent: 74.25, yPercent: 60.7 },
+            { tlc: 'MWL', lastEventLocation: 'Meadow Well Platform 2', lastEvent: 'DEPARTED', xPercent: 78.65, yPercent: 60.7 },
+            { tlc: 'NSH', lastEventLocation: 'North Shields Platform 2', lastEvent: 'DEPARTED', xPercent: 83.15, yPercent: 60.7 },
+            { tlc: 'TYN', lastEventLocation: 'Tynemouth Platform 2', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 38.24 },
+            { tlc: 'CUL', lastEventLocation: 'Cullercoats Platform 2', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 31.25 },
+            { tlc: 'WTL', lastEventLocation: 'Whitley Bay Platform 2', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 23.52 },
+            { tlc: 'MSN', lastEventLocation: 'Monkseaton Platform 2', lastEvent: 'DEPARTED', xPercent: 84.85, yPercent: 84.32 },
+            { tlc: 'WMN', lastEventLocation: 'West Monkseaton Platform 2', lastEvent: 'DEPARTED', xPercent: 78.2, yPercent: 84.32 },
+            { tlc: 'SMR', lastEventLocation: 'Shiremoor Platform 2', lastEvent: 'DEPARTED', xPercent: 71.8, yPercent: 84.32 },
+            { tlc: 'NPK', lastEventLocation: 'Northumberland Park Platform 2', lastEvent: 'DEPARTED', xPercent: 65.35, yPercent: 84.32 },
+            { tlc: 'PMV', lastEventLocation: 'Palmersville Platform 2', lastEvent: 'DEPARTED', xPercent: 58.85, yPercent: 84.32 },
+            { tlc: 'BTN', lastEventLocation: 'Benton Platform 2', lastEvent: 'DEPARTED', xPercent: 52.35, yPercent: 84.32 },
+            { tlc: 'FLE', lastEventLocation: 'Four Lane Ends Platform 2', lastEvent: 'DEPARTED', xPercent: 45.9, yPercent: 84.32 },
+            { tlc: 'LBN', lastEventLocation: 'Longbenton Platform 2', lastEvent: 'DEPARTED', xPercent: 39.5, yPercent: 84.32 },
+            { tlc: 'HEB', lastEventLocation: 'Hebburn Platform 2', lastEvent: 'DEPARTED', xPercent: 63.5, yPercent: 47.35 },
+            { tlc: 'JAR', lastEventLocation: 'Jarrow Platform 2', lastEvent: 'DEPARTED', xPercent: 67.25, yPercent: 47.35 },
+            { tlc: 'BDE', lastEventLocation: 'Bede Platform 2', lastEvent: 'DEPARTED', xPercent: 70.5, yPercent: 47.35 },
+            { tlc: 'SMD', lastEventLocation: 'Simonside Platform 2', lastEvent: 'DEPARTED', xPercent: 73.85, yPercent: 47.35 },
+            { tlc: 'TDK', lastEventLocation: 'Tyne Dock Platform 2', lastEvent: 'DEPARTED', xPercent: 77.25, yPercent: 47.35 },
+            { tlc: 'CHI', lastEventLocation: 'Chichester Platform 2', lastEvent: 'DEPARTED', xPercent: 80.55, yPercent: 47.35 },
+            { tlc: 'SSS', lastEventLocation: 'South Shields Platform 2', lastEvent: 'DEPARTED', xPercent: 83.85, yPercent: 47.35 },
+            { tlc: 'APT', lastEventLocation: 'Airport Platform 2', lastEvent: 'DEPARTED', xPercent: 10.3, yPercent: 84.32 },
+            { tlc: 'CAL', lastEventLocation: 'Callerton Parkway Platform 2', lastEvent: 'DEPARTED', xPercent: 10.3, yPercent: 84.32 },
+            { tlc: 'BFT', lastEventLocation: 'Bank Foot Platform 2', lastEvent: 'DEPARTED', xPercent: 13.6, yPercent: 84.32 },
+            { tlc: 'KSP', lastEventLocation: 'Kingston Park Platform 2', lastEvent: 'DEPARTED', xPercent: 16.8, yPercent: 84.32 },
+            { tlc: 'FAW', lastEventLocation: 'Fawdon Platform 2', lastEvent: 'DEPARTED', xPercent: 20, yPercent: 84.32 },
+            { tlc: 'WBR', lastEventLocation: 'Wansbeck Road Platform 2', lastEvent: 'DEPARTED', xPercent: 23.25, yPercent: 84.32 },
+            { tlc: 'RGC', lastEventLocation: 'Regent Centre Platform 2', lastEvent: 'DEPARTED', xPercent: 26.5, yPercent: 84.32 },
+            { tlc: 'SGF', lastEventLocation: 'South Gosforth Platform 2', lastEvent: 'DEPARTED', xPercent: 30.25, yPercent: 83.26 },
+            { tlc: 'ILF', lastEventLocation: 'Ilford Road Platform 2', lastEvent: 'DEPARTED', xPercent: 31.1, yPercent: 79.03 },
+            { tlc: 'WJS', lastEventLocation: 'West Jesmond Platform 2', lastEvent: 'DEPARTED', xPercent: 32.25, yPercent: 74.89 },
+            { tlc: 'JES', lastEventLocation: 'Jesmond Platform 2', lastEvent: 'DEPARTED', xPercent: 33.3, yPercent: 71.19 },
+            { tlc: 'HAY', lastEventLocation: 'Haymarket Platform 2', lastEvent: 'DEPARTED', xPercent: 34.4, yPercent: 67.37 },
+            { tlc: 'MTS', lastEventLocation: 'Monument Platform 2', lastEvent: 'DEPARTED', xPercent: 35.8, yPercent: 62.61 },
+            { tlc: 'CEN', lastEventLocation: 'Central Platform 2', lastEvent: 'DEPARTED', xPercent: 36.85, yPercent: 57.84 },
+            { tlc: 'GHD', lastEventLocation: 'Gateshead Platform 2', lastEvent: 'DEPARTED', xPercent: 39.1, yPercent: 50.21 },
+            { tlc: 'GST', lastEventLocation: 'Gateshead Stadium Platform 2', lastEvent: 'DEPARTED', xPercent: 45.05, yPercent: 46.82 },
+            { tlc: 'FEL', lastEventLocation: 'Felling Platform 2', lastEvent: 'DEPARTED', xPercent: 49.7, yPercent: 46.82 },
+            { tlc: 'HTH', lastEventLocation: 'Heworth Platform 2', lastEvent: 'DEPARTED', xPercent: 54.5, yPercent: 46.82 },
+            { tlc: 'PLW', lastEventLocation: 'Pelaw Platform 2', lastEvent: 'DEPARTED', xPercent: 59.1, yPercent: 46.82 },
+            { tlc: 'FGT', lastEventLocation: 'Fellgate Platform 2', lastEvent: 'DEPARTED', xPercent: 63.95, yPercent: 42.37 },
+            { tlc: 'BYW', lastEventLocation: 'Brockley Whins Platform 2', lastEvent: 'DEPARTED', xPercent: 69.8, yPercent: 38.35 },
+            { tlc: 'EBO', lastEventLocation: 'East Boldon Platform 2', lastEvent: 'DEPARTED', xPercent: 75.6, yPercent: 38.35 },
+            { tlc: 'SBN', lastEventLocation: 'Seaburn Platform 2', lastEvent: 'DEPARTED', xPercent: 82.7, yPercent: 38.35 },
+            { tlc: 'SFC', lastEventLocation: 'Stadium of Light Platform 2', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 33.69 },
+            { tlc: 'MSP', lastEventLocation: 'St Peters Platform 2', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 70.23 },
+            { tlc: 'SUN', lastEventLocation: 'Sunderland Platform 3', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 76.17 },
+            { tlc: 'PLI', lastEventLocation: 'Park Lane Platform 2', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 83.58 },
+            { tlc: 'UNI', lastEventLocation: 'University Platform 2', lastEvent: 'DEPARTED', xPercent: 83.9, yPercent: 14.94 },
+            { tlc: 'MLF', lastEventLocation: 'Millfield Platform 2', lastEvent: 'DEPARTED', xPercent: 79.15, yPercent: 14.94 },
+            { tlc: 'PAL', lastEventLocation: 'Pallion Platform 2', lastEvent: 'DEPARTED', xPercent: 75.1, yPercent: 14.94 },
+            { tlc: 'SHL', lastEventLocation: 'South Hylton Platform 2', lastEvent: 'DEPARTED', xPercent: 70.65, yPercent: 14.94 },
+            { tlc: 'SJM', lastEventLocation: 'St James Platform 2', lastEvent: 'ARRIVED', xPercent: 33.55, yPercent: 60.7 },
+            { tlc: 'MTW', lastEventLocation: 'Monument Platform 3', lastEvent: 'ARRIVED', xPercent: 36.1, yPercent: 60.7 },
+            { tlc: 'MAN', lastEventLocation: 'Manors Platform 2', lastEvent: 'ARRIVED', xPercent: 44.8, yPercent: 60.7 },
+            { tlc: 'BYK', lastEventLocation: 'Byker Platform 2', lastEvent: 'ARRIVED', xPercent: 49.3, yPercent: 60.7 },
+            { tlc: 'CRD', lastEventLocation: 'Chillingham Road Platform 2', lastEvent: 'ARRIVED', xPercent: 53.85, yPercent: 60.7 },
+            { tlc: 'WKG', lastEventLocation: 'Walkergate Platform 2', lastEvent: 'ARRIVED', xPercent: 58.2, yPercent: 60.7 },
+            { tlc: 'WSD', lastEventLocation: 'Wallsend Platform 2', lastEvent: 'ARRIVED', xPercent: 62.85, yPercent: 60.7 },
+            { tlc: 'HDR', lastEventLocation: 'Hadrian Road Platform 2', lastEvent: 'ARRIVED', xPercent: 67.3, yPercent: 60.7 },
+            { tlc: 'HOW', lastEventLocation: 'Howdon Platform 2', lastEvent: 'ARRIVED', xPercent: 72.05, yPercent: 60.7 },
+            { tlc: 'PCM', lastEventLocation: 'Percy Main Platform 2', lastEvent: 'ARRIVED', xPercent: 76.45, yPercent: 60.7 },
+            { tlc: 'MWL', lastEventLocation: 'Meadow Well Platform 2', lastEvent: 'ARRIVED', xPercent: 80.8, yPercent: 60.7 },
+            { tlc: 'NSH', lastEventLocation: 'North Shields Platform 2', lastEvent: 'ARRIVED', xPercent: 85.45, yPercent: 60.7 },
+            { tlc: 'TYN', lastEventLocation: 'Tynemouth Platform 2', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 65.04 },
+            { tlc: 'CUL', lastEventLocation: 'Cullercoats Platform 2', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 72.46 },
+            { tlc: 'WTL', lastEventLocation: 'Whitley Bay Platform 2', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 79.98 },
+            { tlc: 'MSN', lastEventLocation: 'Monkseaton Platform 2', lastEvent: 'ARRIVED', xPercent: 81.4, yPercent: 84.32 },
+            { tlc: 'WMN', lastEventLocation: 'West Monkseaton Platform 2', lastEvent: 'ARRIVED', xPercent: 75, yPercent: 84.32 },
+            { tlc: 'SMR', lastEventLocation: 'Shiremoor Platform 2', lastEvent: 'ARRIVED', xPercent: 68.55, yPercent: 84.32 },
+            { tlc: 'NPK', lastEventLocation: 'Northumberland Park Platform 2', lastEvent: 'ARRIVED', xPercent: 62.15, yPercent: 84.32 },
+            { tlc: 'PMV', lastEventLocation: 'Palmersville Platform 2', lastEvent: 'ARRIVED', xPercent: 55.55, yPercent: 84.32 },
+            { tlc: 'BTN', lastEventLocation: 'Benton Platform 2', lastEvent: 'ARRIVED', xPercent: 49.1, yPercent: 84.32 },
+            { tlc: 'FLE', lastEventLocation: 'Four Lane Ends Platform 2', lastEvent: 'ARRIVED', xPercent: 42.65, yPercent: 84.32 },
+            { tlc: 'LBN', lastEventLocation: 'Longbenton Platform 2', lastEvent: 'ARRIVED', xPercent: 36.3, yPercent: 84.32 },
+            { tlc: 'HEB', lastEventLocation: 'Hebburn Platform 2', lastEvent: 'ARRIVED', xPercent: 65.6, yPercent: 47.35 },
+            { tlc: 'JAR', lastEventLocation: 'Jarrow Platform 2', lastEvent: 'ARRIVED', xPercent: 68.9, yPercent: 47.35 },
+            { tlc: 'BDE', lastEventLocation: 'Bede Platform 2', lastEvent: 'ARRIVED', xPercent: 72.05, yPercent: 47.35 },
+            { tlc: 'SMD', lastEventLocation: 'Simonside Platform 2', lastEvent: 'ARRIVED', xPercent: 75.6, yPercent: 47.35 },
+            { tlc: 'TDK', lastEventLocation: 'Tyne Dock Platform 2', lastEvent: 'ARRIVED', xPercent: 78.85, yPercent: 47.35 },
+            { tlc: 'CHI', lastEventLocation: 'Chichester Platform 2', lastEvent: 'ARRIVED', xPercent: 82.2, yPercent: 47.35 },
+            { tlc: 'SSS', lastEventLocation: 'South Shields Platform 2', lastEvent: 'ARRIVED', xPercent: 85.45, yPercent: 47.35 },
+            { tlc: 'APT', lastEventLocation: 'Airport Platform 2', lastEvent: 'ARRIVED', xPercent: 8.65, yPercent: 84.32 },
+            { tlc: 'CAL', lastEventLocation: 'Callerton Parkway Platform 2', lastEvent: 'ARRIVED', xPercent: 11.95, yPercent: 84.32 },
+            { tlc: 'BFT', lastEventLocation: 'Bank Foot Platform 2', lastEvent: 'ARRIVED', xPercent: 15.2, yPercent: 84.32 },
+            { tlc: 'KSP', lastEventLocation: 'Kingston Park Platform 2', lastEvent: 'ARRIVED', xPercent: 18.35, yPercent: 84.32 },
+            { tlc: 'FAW', lastEventLocation: 'Fawdon Platform 2', lastEvent: 'ARRIVED', xPercent: 21.65, yPercent: 84.32 },
+            { tlc: 'WBR', lastEventLocation: 'Wansbeck Road Platform 2', lastEvent: 'ARRIVED', xPercent: 24.85, yPercent: 84.32 },
+            { tlc: 'RGC', lastEventLocation: 'Regent Centre Platform 2', lastEvent: 'ARRIVED', xPercent: 28.1, yPercent: 84.32 },
+            { tlc: 'SGF', lastEventLocation: 'South Gosforth Platform 2', lastEvent: 'ARRIVED', xPercent: 30.65, yPercent: 80.83 },
+            { tlc: 'ILF', lastEventLocation: 'Ilford Road Platform 2', lastEvent: 'ARRIVED', xPercent: 31.65, yPercent: 77.12 },
+            { tlc: 'WJS', lastEventLocation: 'West Jesmond Platform 2', lastEvent: 'ARRIVED', xPercent: 32.75, yPercent: 72.99 },
+            { tlc: 'JES', lastEventLocation: 'Jesmond Platform 2', lastEvent: 'ARRIVED', xPercent: 33.8, yPercent: 69.28 },
+            { tlc: 'HAY', lastEventLocation: 'Haymarket Platform 2', lastEvent: 'ARRIVED', xPercent: 34.9, yPercent: 65.36 },
+            { tlc: 'MTS', lastEventLocation: 'Monument Platform 2', lastEvent: 'ARRIVED', xPercent: 36.1, yPercent: 60.7 },
+            { tlc: 'CEN', lastEventLocation: 'Central Platform 2', lastEvent: 'ARRIVED', xPercent: 37.45, yPercent: 55.93 },
+            { tlc: 'GHD', lastEventLocation: 'Gateshead Platform 2', lastEvent: 'ARRIVED', xPercent: 42.65, yPercent: 46.82 },
+            { tlc: 'GST', lastEventLocation: 'Gateshead Stadium Platform 2', lastEvent: 'ARRIVED', xPercent: 47.4, yPercent: 46.82 },
+            { tlc: 'FEL', lastEventLocation: 'Felling Platform 2', lastEvent: 'ARRIVED', xPercent: 51.95, yPercent: 46.82 },
+            { tlc: 'HTH', lastEventLocation: 'Heworth Platform 2', lastEvent: 'ARRIVED', xPercent: 57.05, yPercent: 46.82 },
+            { tlc: 'PLW', lastEventLocation: 'Pelaw Platform 2', lastEvent: 'ARRIVED', xPercent: 61.1, yPercent: 46.82 },
+            { tlc: 'FGT', lastEventLocation: 'Fellgate Platform 2', lastEvent: 'ARRIVED', xPercent: 66.75, yPercent: 38.35 },
+            { tlc: 'BYW', lastEventLocation: 'Brockley Whins Platform 2', lastEvent: 'ARRIVED', xPercent: 72.85, yPercent: 38.35 },
+            { tlc: 'EBO', lastEventLocation: 'East Boldon Platform 2', lastEvent: 'ARRIVED', xPercent: 78.35, yPercent: 38.35 },
+            { tlc: 'SBN', lastEventLocation: 'Seaburn Platform 2', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 35.38 },
+            { tlc: 'SFC', lastEventLocation: 'Stadium of Light Platform 2', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 31.78 },
+            { tlc: 'MSP', lastEventLocation: 'St Peters Platform 2', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 27.86 },
+            { tlc: 'SUN', lastEventLocation: 'Sunderland Platform 2', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 19.6 },
+            { tlc: 'PLI', lastEventLocation: 'Park Lane Platform 2', lastEvent: 'ARRIVED', xPercent: 85.45, yPercent: 14.94 },
+            { tlc: 'UNI', lastEventLocation: 'University Platform 2', lastEvent: 'ARRIVED', xPercent: 81.4, yPercent: 14.94 },
+            { tlc: 'MLF', lastEventLocation: 'Millfield Platform 2', lastEvent: 'ARRIVED', xPercent: 77.1, yPercent: 14.94 },
+            { tlc: 'PAL', lastEventLocation: 'Pallion Platform 2', lastEvent: 'ARRIVED', xPercent: 72.85, yPercent: 14.94 },
+            { tlc: 'SHL', lastEventLocation: 'South Hylton Platform 2', lastEvent: 'ARRIVED', xPercent: 68.5, yPercent: 14.94 },
+
+        ];
+
+               // Train icon
+               const trainIcon = L.icon({
+            iconUrl: 'https://icon-library.com/images/train-icon-free/train-icon-free-1.jpg',
+            iconSize: [32, 32],
+            iconAnchor: [16, 16],
+            popupAnchor: [0, -16]
+        });
+
+        function updateTime() {
+        const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        document.getElementById("currentTime").innerHTML = `<b>Current Time: ${currentTime}</b>`;
+    }
+
+        // Call updateTime every second
+        setInterval(updateTime, 1000);
+
+
+        // Fetch train data
+
+        async function fetchTrainData(stationCode, direction) {
+        if (!stationCode || !direction) return [];
+
+        const apiUrl = `https://metro-rti.nexus.org.uk/api/times/${stationCode}/${direction}`;
+
+        try {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+
+            console.log(`Data for station ${stationCode} (direction ${direction}):`, data); // 🔹 Log API response
+
+            return data.map(train => ({
+                trn: train.trn,
+                lastEvent: train.lastEvent,
+                lastEventLocation: train.lastEventLocation,
+                dueIn: train.dueIn
+            }));
+        } catch (error) {
+            console.error(`Error fetching data for ${stationCode} (direction ${direction})`, error);
+            return [];
+        }
+    }
+
+    async function updateTrainDisplay() {
+        const station = document.getElementById("station").value;
+        const direction = document.getElementById("direction").value;
+        const trainDataDiv = document.getElementById("trainData");
+
+        const trains = await fetchTrainData(station, direction);
+
+        if (trains.length === 0) {
+            trainDataDiv.innerHTML = "<b>No trains available for this selection.</b>";
+            return;
+        }
+
+        let output = `<b>Trains at ${station} (Platform ${direction}):</b><br>`;
+        trains.forEach(train => {
+            output += `Train ${train.trn} - ${train.lastEvent} ${train.lastEventLocation} due in ${train.dueIn} minutes<br>`;
+        });
+
+        trainDataDiv.innerHTML = output;
+    }
+
+    document.getElementById("station").addEventListener("change", updateTrainDisplay);
+    document.getElementById("direction").addEventListener("change", updateTrainDisplay);
+
+        // Fetch train data for all stations
+        async function getAllTrainData() {
+            const stations = ['APT', 'FAW', 'SGF', 'JES', 'CEN', 'GST', 'PLW', 'BDE',
+                              'SSS', 'BYW', 'SUN', 'MLF', 'SHL', 'BTN', 'SMR', 'MSN',
+                              'CUL', 'PCM', 'WKG', 'SJM'];
+            let allTrainData = [];
+
+            for (const station of stations) {
+                const data1 = await fetchTrainData(station, 1);
+                const data2 = await fetchTrainData(station, 2);
+
+                if (data1) allTrainData.push(...data1);
+                if (data2) allTrainData.push(...data2);
+            }
+
+            // Match trains to coordinates using lastEventLocation
+            allTrainData.forEach(train => {
+                const stationMatch = stationCoordinates.find(station =>
+                    train.lastEventLocation === station.lastEventLocation
+                );
+
+                if (stationMatch) {
+                    train.x = (stationMatch.xPercent / 100) * imageWidth; // Scale X position
+                    train.y = (stationMatch.yPercent / 100) * imageHeight; // Scale Y position
+                } else {
+                    console.warn(`No coordinates found for train at ${train.lastEventLocation}`);
+                }
+            });
+
+            // Remove duplicate trains
+            const uniqueTrains = [...new Map(allTrainData.map(train => [train.trn, train])).values()];
+
+            // Display train markers
+            uniqueTrains.forEach(train => {
+                if (train.x && train.y) {
+                    L.marker([train.y, train.x], { icon: trainIcon })
+                        .addTo(map)
+                        .bindPopup(`Train ${train.trn} at ${train.lastEventLocation}`);
+                }
+            });
+        }
+
+        // Fetch and display train data
+        getAllTrainData();
+    </script>
+</body>
+</html>

@@ -28,18 +28,26 @@
         margin-top: 20px;
         margin-bottom: 20px;
         width: 60%;
-        height: 90vh;
+        height: 50vh; /* Adjust this initial height as needed */
+        max-height: 600px; /* Optional: Set a maximum height */
         display: flex;
         justify-content: center;
         align-items: center;
-        /* Remove background-color from here */
     }
 
     #map {
         width: 95%;
         height: 100%;
         border: 2px solid rgb(224, 185, 9);
-        background-color: transparent; /*Ensures no background*/
+        background-color: transparent;
+    }
+
+    /* Media query for smaller screens (mobile) */
+    @media (max-width: 768px) {
+        #map-container {
+            height: 40vh; /* Adjust height for mobile */
+            max-height: 400px; /* Adjust max-height for mobile if needed */
+        }
     }
 
     #controls {

@@ -31,8 +31,8 @@
         height: 50vh; /* Adjust this initial height as needed */
         max-height: 600px; /* Optional: Set a maximum height */
         display: flex;
-        justify-content: center;
-        align-items: center;
+        justify-content: top;
+        align-items: top;
     }
 
     #map {
@@ -169,14 +169,12 @@
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
-        // Metro map image
+        // Metro map image and dimensions
         const imageUrl = 'https://www.nexus.org.uk/themes/custom/nexus/images/metro-map-large.jpg';
-
-        // Image dimensions (actual size of the metro map image)
         const imageWidth = 2000;
         const imageHeight = 944;
 
-        // Define Leaflet map with Simple CRS (non-geographic)
+        // Define Leaflet map with Simple CRS
         const map = L.map('map', {
             crs: L.CRS.Simple,
             minZoom: -2,
@@ -184,28 +182,33 @@
             zoom: 1
         });
 
-        // Set bounds based on the image dimensions
+        // Set bounds and add image overlay
         const imageBounds = [[0, 0], [imageHeight, imageWidth]];
         L.imageOverlay(imageUrl, imageBounds).addTo(map);
         map.fitBounds(imageBounds);
 
-
-        // Keep aspect ratio and adjust map bounds on window resize
+        // Function to resize the map and fit bounds
         function resizeMap() {
             const windowAspectRatio = window.innerWidth / window.innerHeight;
             const imageAspectRatio = imageWidth / imageHeight;
 
             if (windowAspectRatio > imageAspectRatio) {
-                // Window is wider than the image, fit height
                 map.fitBounds([[0, 0], [imageHeight, imageHeight * windowAspectRatio]]);
             } else {
-                // Window is taller than the image, fit width
                 map.fitBounds([[0, 0], [imageWidth / windowAspectRatio, imageWidth]]);
             }
+            map.invalidateSize();
         }
 
-        window.addEventListener('resize', resizeMap);
-        resizeMap(); // Initial call to fit the map correctly
+        // Use ResizeObserver to detect changes in the map container size
+        const mapContainer = document.getElementById('map-container');
+        const resizeObserver = new ResizeObserver(() => {
+            resizeMap();
+        });
+        resizeObserver.observe(mapContainer);
+
+        // Initial call to fit the map correctly
+        resizeMap();
 
         // Station coordinate lookup table
         const stationCoordinates = [

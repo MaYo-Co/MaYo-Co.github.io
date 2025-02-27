@@ -75,7 +75,7 @@
 <body>
     <h1 id="title">Live Tyne and Wear Metro Map</h1>
     <p style="text-align: center;">Real-time updates on metro train locations.</p>
-    <p style="text-align: center;">Not associated with Nexus in any way but using their public api.</p>
+    <p style="text-align: center;">Not associated with Nexus in any way but using their open api. I wasn't going to publish this but their new pop app makes it difficult to get info for a station that you're not closest to.</p>
 
     <div id="controls">
         <label for="station">Select Station:</label>
@@ -623,9 +623,9 @@
             return;
         }
 
-        let output = `<b>Trains at ${station} (Platform ${direction}):</b><br>`;
+        let output = `<b>Trains at Platform ${direction}:</b><br>`;
         trains.forEach(train => {
-            output += `Train ${train.trn} - ${train.lastEvent} ${train.lastEventLocation} due in ${train.dueIn} minutes<br>`;
+            output += `Train ${train.trn} - ${train.lastEvent}.tolowercase() ${train.lastEventLocation} due in ${train.dueIn} minutes<br>`;
         });
 
         trainDataDiv.innerHTML = output;

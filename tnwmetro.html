@@ -625,7 +625,9 @@
 
         let output = `<b>Trains at Platform ${direction}:</b><br>`;
         trains.forEach(train => {
-            output += `Train ${train.trn} - ${train.lastEvent}.tolowercase() ${train.lastEventLocation} due in ${train.dueIn} minutes<br>`;
+          let lastEventLower = train.lastEvent.toLowerCase(); 
+        
+          output += `Train ${train.trn} - ${lastEventLower} ${train.lastEventLocation} due in ${train.dueIn} minutes<br>`;
         });
 
         trainDataDiv.innerHTML = output;

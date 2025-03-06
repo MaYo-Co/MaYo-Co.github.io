@@ -84,7 +84,8 @@
 <body>
     <h1 id="title">Live Tyne and Wear Metro Map</h1>
     <p style="text-align: center;">Real-time updates on metro train locations.</p>
-    <p style="text-align: center;">Not associated with Nexus in any way but using their open api. I wasn't going to publish this but their new pop app makes it difficult to get info for a station that you're not closest to.</p>
+    <p style="text-align: center;">Not associated with Nexus in any way but using their open api.</p>
+    <p style="text-align: center;">I wasn't going to publish this but their new pop app is a step backwards for usability.</p>
 
     <div id="controls">
         <label for="station">Select Station:</label>
@@ -597,7 +598,6 @@
         // Call updateTime every second
         setInterval(updateTime, 1000);
 
-
         // Fetch train data
 
         async function fetchTrainData(stationCode, direction) {
@@ -615,7 +615,8 @@
                 trn: train.trn,
                 lastEvent: train.lastEvent,
                 lastEventLocation: train.lastEventLocation,
-                dueIn: train.dueIn
+                dueIn: train.dueIn,
+                destination: train.destination
             }));
         } catch (error) {
             console.error(`Error fetching data for ${stationCode} (direction ${direction})`, error);
@@ -639,7 +640,7 @@
         trains.forEach(train => {
           let lastEventLower = train.lastEvent.toLowerCase(); 
         
-          output += `Train ${train.trn} - Currently ${lastEventLower} ${train.lastEventLocation}. Due in ${train.dueIn} minutes<br>`;
+          output += `Train ${train.trn} to ${train.destination} - Due in ${train.dueIn} minutes - Currently ${lastEventLower} ${train.lastEventLocation}.<br>`;
         });
 
         trainDataDiv.innerHTML = output;

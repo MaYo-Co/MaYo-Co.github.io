@@ -36,7 +36,7 @@
     }
 
     #map {
-        width: 95%;
+        width: 100%;
         height: 100%;
         border: 2px solid rgb(224, 185, 9);
         background-color: transparent;
@@ -178,9 +178,9 @@
         // Define Leaflet map with Simple CRS
         const map = L.map('map', {
             crs: L.CRS.Simple,
-            minZoom: -2,
-            maxZoom: 2,
-            zoom: 1
+            minZoom: -1,
+            maxZoom: -1,
+            zoom: -1
         });
 
         // Set bounds and add image overlay

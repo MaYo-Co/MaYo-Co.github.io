@@ -18,11 +18,6 @@
         text-align: center;
     }
 
-      @font-face {
-        font-family: "dot matrix";
-        src: url("/Assets/Dot-Matrix.ttf") format('truetype');
-      }
-
     #title {
         text-align: center;
         font-size: 24px;
@@ -95,7 +90,7 @@
     <div id="controls">
         <label for="station">Select Station:</label>
         <select id="station">
-            <option value="">--Select Station--</option>
+            <option value="">Select Station</option>
             <option value='APT'> Airport</option>
             <option value='BFT'> Bank Foot</option>
             <option value='BDE'> Bede</option>
@@ -184,8 +179,8 @@
         const map = L.map('map', {
             crs: L.CRS.Simple,
             minZoom: -1,
-            maxZoom: -1,
-            zoom: -1
+            maxZoom: 2,
+            zoom: 0
         });
 
         // Set bounds and add image overlay
@@ -193,28 +188,55 @@
         L.imageOverlay(imageUrl, imageBounds).addTo(map);
         map.fitBounds(imageBounds);
 
-        // Function to resize the map and fit bounds
-        function resizeMap() {
-            const windowAspectRatio = window.innerWidth / window.innerHeight;
-            const imageAspectRatio = imageWidth / imageHeight;
+        // Function to zoom in on a station
+        function zoomToStation(stationCode) {
+            const stationData = stationCoordinates.find(station => station.tlc === stationCode);
 
-            if (windowAspectRatio > imageAspectRatio) {
-                map.fitBounds([[0, 0], [imageHeight, imageHeight * windowAspectRatio]]);
+            if (stationData && stationData.xPercent && stationData.yPercent) {
+                const stationX = (stationData.xPercent / 100) * imageWidth;
+                const stationY = (stationData.yPercent / 100) * imageHeight;
+
+                // Zoom and center on the station coordinates
+                map.setView([stationY, stationX], 1); // Adjust zoom level as needed
             } else {
-                map.fitBounds([[0, 0], [imageWidth / windowAspectRatio, imageWidth]]);
+                console.warn(`Station coordinates not found for ${stationCode}`);
             }
-            map.invalidateSize();
         }
 
-        // Use ResizeObserver to detect changes in the map container size
-        const mapContainer = document.getElementById('map-container');
-        const resizeObserver = new ResizeObserver(() => {
-            resizeMap();
+        // Event listener for station selection
+        document.getElementById("station").addEventListener("change", function () {
+            const selectedStation = this.value;
+            updateTrainDisplay(); // Update train data
+            if (selectedStation) {
+                zoomToStation(selectedStation); // Zoom to the selected station
+            } else {
+            map.fitBounds([[0, 0], [imageHeight, imageWidth]]); //reset zoom
+            }
         });
-        resizeObserver.observe(mapContainer);
 
-        // Initial call to fit the map correctly
-        resizeMap();
+
+        // // Function to resize the map and fit bounds
+        // function resizeMap() {
+        //     const windowAspectRatio = window.innerWidth / window.innerHeight;
+        //     const imageAspectRatio = imageWidth / imageHeight;
+
+        //     if (windowAspectRatio > imageAspectRatio) {
+        //         map.fitBounds([[0, 0], [imageHeight, imageHeight * windowAspectRatio]]);
+        //     } else {
+        //         map.fitBounds([[0, 0], [imageWidth / windowAspectRatio, imageWidth]]);
+        //     }
+        //     map.invalidateSize();
+        // }
+
+        // // Use ResizeObserver to detect changes in the map container size
+        // const mapContainer = document.getElementById('map-container');
+        // const resizeObserver = new ResizeObserver(() => {
+        //     resizeMap();
+        // });
+        // resizeObserver.observe(mapContainer);
+
+        // // Initial call to fit the map correctly
+        // resizeMap();
 
         // Station coordinate lookup table
         const stationCoordinates = [
@@ -590,10 +612,19 @@
                // Train icon
                const trainIcon = L.icon({
             iconUrl: 'https://icon-library.com/images/train-icon-free/train-icon-free-1.jpg',
-            iconSize: [16, 16],
+            iconSize: [32, 32],
             iconAnchor: [16, 16],
             popupAnchor: [0, -16]
         });
+
+                // Special train icons
+                const specialTrainIcon = L.icon({
+            iconUrl: 'https://icon-library.com/images/train-icon/train-icon-28.jpg',
+            iconSize: [32, 32],
+            iconAnchor: [16, 16],
+            popupAnchor: [0, -16]
+        });
+
 
         function updateTime() {
         const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -688,13 +719,20 @@
 
             // Display train markers
             uniqueTrains.forEach(train => {
-                if (train.x && train.y) {
-                    L.marker([train.y, train.x], { icon: trainIcon })
-                        .addTo(map)
-                        .bindPopup(`Train ${train.trn} at ${train.lastEventLocation}`);
+            if (train.x && train.y) {
+                let iconToUse = trainIcon; // Default icon
+
+                // Check for special train numbers
+                if (train.trn === '102' || train.trn === '121' || train.trn === '123') {
+                    iconToUse = specialTrainIcon;
                 }
-            });
-        }
+
+                L.marker([train.y, train.x], { icon: iconToUse })
+                    .addTo(map)
+                    .bindPopup(`Train ${train.trn} at ${train.lastEventLocation}`);
+            }
+                    });
+                }
 
         // Fetch and display train data
         getAllTrainData();

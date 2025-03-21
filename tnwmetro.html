@@ -85,7 +85,7 @@
     <h1 id="title">Live Tyne and Wear Metro Map</h1>
     <p style="text-align: center;">Real-time updates on metro train locations.</p>
     <p style="text-align: center;">Not associated with Nexus in any way but using their open api.</p>
-    <p style="text-align: center;">I wasn't going to publish this but their new pop app is a step backwards for usability.</p>
+    <p style="text-align: center;">Page refreshes automatically every 2mins</p>
 
     <div id="controls">
         <label for="station">Select Station:</label>
@@ -123,8 +123,8 @@
             <option value='MWL'> Meadow Well</option>
             <option value='MLF'> Millfield</option>
             <option value='MSN'> Monkseaton</option>
-            <option value='MTW'> Monument East&West</option>
-            <option value='MTS'> Monument North&South</option>
+            <option value='MTW'> Monument</option>
+            <option value='MTS'> Monument</option>
             <option value='NSH'> North Shields</option>
             <option value='NPK'> Northumberland Park</option>
             <option value='PAL'> Pallion</option>
@@ -182,6 +182,14 @@
             maxZoom: 2,
             zoom: 0
         });
+
+        // Function to refresh the page
+        function refreshPage() {
+            location.reload();
+        }
+
+        // Set interval to refresh every 2 minutes (120000 milliseconds)
+        setInterval(refreshPage, 120000);
 
         // Set bounds and add image overlay
         const imageBounds = [[0, 0], [imageHeight, imageWidth]];
@@ -737,5 +745,16 @@
         // Fetch and display train data
         getAllTrainData();
     </script>
+
+<button id="backToIndex">Back to Index</button>
+<script>
+    // ... Your existing JavaScript ...
+
+    // Button to go back to index page
+    document.getElementById("backToIndex").addEventListener("click", function() {
+        window.location.href = "index.html"; // Replace "index.html" with the correct URL of your index page
+    });
+
+</script>
 </body>
 </html>

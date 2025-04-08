@@ -133,8 +133,8 @@
             <option value='MWL'> Meadow Well</option>
             <option value='MLF'> Millfield</option>
             <option value='MSN'> Monkseaton</option>
-            <option value='MTW'> Monument</option>
-            <option value='MTS'> Monument</option>
+            <option value='MTW'> Monument (E/W)</option>
+            <option value='MTS'> Monument (N/S)</option>
             <option value='NSH'> North Shields</option>
             <option value='NPK'> Northumberland Park</option>
             <option value='PAL'> Pallion</option>
@@ -167,10 +167,8 @@
         <label for="direction">Select Direction:</label>
         <select id="direction">
             <option value="">--Select Platform--</option>
-            <option value="1">Platform 1</option>
-            <option value="2">Platform 2</option>
-            <option value="3">Platform 3</option>
-            <option value="4">Platform 4</option>
+            <option value="1">Platform 1 or 3</option>
+            <option value="2">Platform 2 or 4</option>
             
         </select>
     </div>
@@ -297,13 +295,13 @@
             { tlc: 'CRD', lastEventLocation: 'Chillingham Road Platform 1', lastEvent: 'DEPARTED', xPercent: 56.05, yPercent: 60.7 },
             { tlc: 'CRD', lastEventLocation: 'Chillingham Road Platform 2', lastEvent: 'APPROACHING', xPercent: 56.05, yPercent: 60.7 },
             { tlc: 'CRD', lastEventLocation: 'Chillingham Road Platform 2', lastEvent: 'ARRIVED', xPercent: 53.85, yPercent: 60.7 },
-            { tlc: 'CRD', lastEventLocation: 'Chillingham Road Platform 2', lastEvent: 'DEPARTED', xPercent: 51.6, yPercent: 60.7 },
-            { tlc: 'CUL', lastEventLocation: 'Cullercoats Platform 1', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 31.25 },
-            { tlc: 'CUL', lastEventLocation: 'Cullercoats Platform 1', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 27.46 },
-            { tlc: 'CUL', lastEventLocation: 'Cullercoats Platform 1', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 23.52 },
-            { tlc: 'CUL', lastEventLocation: 'Cullercoats Platform 2', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 23.52 },
-            { tlc: 'CUL', lastEventLocation: 'Cullercoats Platform 2', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 27.46 },
-            { tlc: 'CUL', lastEventLocation: 'Cullercoats Platform 2', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 31.25 },
+            { tlc: 'CRD', lastEventLocation: 'Chillingham Road Platform 2', lastEvent: 'DEPARTED', xPercent: 51.6, yPercent: 60.7 },   
+            { tlc: 'CUL', lastEventLocation: 'Cullercoats Platform 1', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 74.89 },
+            { tlc: 'CUL', lastEventLocation: 'Cullercoats Platform 1', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 72.99 },
+            { tlc: 'CUL', lastEventLocation: 'Cullercoats Platform 1', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 71.19 },
+            { tlc: 'CUL', lastEventLocation: 'Cullercoats Platform 2', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 71.19 },
+            { tlc: 'CUL', lastEventLocation: 'Cullercoats Platform 2', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 72.99 },
+            { tlc: 'CUL', lastEventLocation: 'Cullercoats Platform 2', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 74.89 },
             { tlc: 'EBO', lastEventLocation: 'East Boldon Platform 1', lastEvent: 'APPROACHING', xPercent: 75.6, yPercent: 38.35 },
             { tlc: 'EBO', lastEventLocation: 'East Boldon Platform 1', lastEvent: 'ARRIVED', xPercent: 78.35, yPercent: 38.35 },
             { tlc: 'EBO', lastEventLocation: 'East Boldon Platform 1', lastEvent: 'DEPARTED', xPercent: 82.7, yPercent: 38.35 },
@@ -545,23 +543,23 @@
             { tlc: 'SSS', lastEventLocation: 'South Shields Platform 2', lastEvent: 'ARRIVED', xPercent: 85.45, yPercent: 47.35 },
             { tlc: 'SSS', lastEventLocation: 'South Shields Platform 2', lastEvent: 'DEPARTED', xPercent: 83.85, yPercent: 47.35 },
             { tlc: 'SUN', lastEventLocation: 'Sunderland Platform 2', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 76.17 },
-            { tlc: 'SUN', lastEventLocation: 'Sunderland Platform 2', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 19.6 },
+            { tlc: 'SUN', lastEventLocation: 'Sunderland Platform 2', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 80.6 },
             { tlc: 'SUN', lastEventLocation: 'Sunderland Platform 2', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 83.58 },
             { tlc: 'SUN', lastEventLocation: 'Sunderland Platform 3', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 83.58 },
-            { tlc: 'SUN', lastEventLocation: 'Sunderland Platform 3', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 19.6 },
+            { tlc: 'SUN', lastEventLocation: 'Sunderland Platform 3', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 80.6 },
             { tlc: 'SUN', lastEventLocation: 'Sunderland Platform 3', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 76.17 },
             { tlc: 'TDK', lastEventLocation: 'Tyne Dock Platform 1', lastEvent: 'APPROACHING', xPercent: 77.25, yPercent: 47.35 },
             { tlc: 'TDK', lastEventLocation: 'Tyne Dock Platform 1', lastEvent: 'ARRIVED', xPercent: 78.85, yPercent: 47.35 },
             { tlc: 'TDK', lastEventLocation: 'Tyne Dock Platform 1', lastEvent: 'DEPARTED', xPercent: 80.55, yPercent: 47.35 },
             { tlc: 'TDK', lastEventLocation: 'Tyne Dock Platform 2', lastEvent: 'APPROACHING', xPercent: 80.55, yPercent: 47.35 },
             { tlc: 'TDK', lastEventLocation: 'Tyne Dock Platform 2', lastEvent: 'ARRIVED', xPercent: 78.85, yPercent: 47.35 },
-            { tlc: 'TDK', lastEventLocation: 'Tyne Dock Platform 2', lastEvent: 'DEPARTED', xPercent: 77.25, yPercent: 47.35 },
-            { tlc: 'TYN', lastEventLocation: 'Tynemouth Platform 1', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 38.24 },
-            { tlc: 'TYN', lastEventLocation: 'Tynemouth Platform 1', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 34.7 },
-            { tlc: 'TYN', lastEventLocation: 'Tynemouth Platform 1', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 31.25 },
-            { tlc: 'TYN', lastEventLocation: 'Tynemouth Platform 2', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 31.25 },
-            { tlc: 'TYN', lastEventLocation: 'Tynemouth Platform 2', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 34.7 },
-            { tlc: 'TYN', lastEventLocation: 'Tynemouth Platform 2', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 38.24 },
+            { tlc: 'TDK', lastEventLocation: 'Tyne Dock Platform 2', lastEvent: 'DEPARTED', xPercent: 77.25, yPercent: 47.35 },  
+            { tlc: 'TYN', lastEventLocation: 'Tynemouth Platform 1', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 67.37 },
+            { tlc: 'TYN', lastEventLocation: 'Tynemouth Platform 1', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 65.36 },
+            { tlc: 'TYN', lastEventLocation: 'Tynemouth Platform 1', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 62.61 },
+            { tlc: 'TYN', lastEventLocation: 'Tynemouth Platform 2', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 62.61 },
+            { tlc: 'TYN', lastEventLocation: 'Tynemouth Platform 2', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 65.36 },
+            { tlc: 'TYN', lastEventLocation: 'Tynemouth Platform 2', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 67.37 },
             { tlc: 'UNI', lastEventLocation: 'University Platform 1', lastEvent: 'APPROACHING', xPercent: 83.9, yPercent: 14.94 },
             { tlc: 'UNI', lastEventLocation: 'University Platform 1', lastEvent: 'ARRIVED', xPercent: 81.4, yPercent: 14.94 },
             { tlc: 'UNI', lastEventLocation: 'University Platform 1', lastEvent: 'DEPARTED', xPercent: 79.15, yPercent: 14.94 },
@@ -598,12 +596,13 @@
             { tlc: 'WSD', lastEventLocation: 'Wallsend Platform 2', lastEvent: 'APPROACHING', xPercent: 65.1, yPercent: 60.7 },
             { tlc: 'WSD', lastEventLocation: 'Wallsend Platform 2', lastEvent: 'ARRIVED', xPercent: 62.85, yPercent: 60.7 },
             { tlc: 'WSD', lastEventLocation: 'Wallsend Platform 2', lastEvent: 'DEPARTED', xPercent: 60.55, yPercent: 60.7 },
-            { tlc: 'WTL', lastEventLocation: 'Whitley Bay Platform 1', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 23.52 },
-            { tlc: 'WTL', lastEventLocation: 'Whitley Bay Platform 1', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 27 },
-            { tlc: 'WTL', lastEventLocation: 'Whitley Bay Platform 1', lastEvent: 'DEPARTED', xPercent: 84.85, yPercent: 30.5 },
-            { tlc: 'WTL', lastEventLocation: 'Whitley Bay Platform 2', lastEvent: 'APPROACHING', xPercent: 84.85, yPercent: 30.5 },
-            { tlc: 'WTL', lastEventLocation: 'Whitley Bay Platform 2', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 27 },
-            { tlc: 'WTL', lastEventLocation: 'Whitley Bay Platform 2', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 23.52 },
+            { tlc: 'WTL', lastEventLocation: 'Whitley Bay Platform 1', lastEvent: 'APPROACHING', xPercent: 87, yPercent: 83.26 },
+            { tlc: 'WTL', lastEventLocation: 'Whitley Bay Platform 1', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 80.83 },
+            { tlc: 'WTL', lastEventLocation: 'Whitley Bay Platform 1', lastEvent: 'DEPARTED', xPercent: 84.85, yPercent: 79.03 },
+            { tlc: 'WTL', lastEventLocation: 'Whitley Bay Platform 2', lastEvent: 'APPROACHING', xPercent: 84.85, yPercent: 79.03 },
+            { tlc: 'WTL', lastEventLocation: 'Whitley Bay Platform 2', lastEvent: 'ARRIVED', xPercent: 87, yPercent: 80.83 },
+            { tlc: 'WTL', lastEventLocation: 'Whitley Bay Platform 2', lastEvent: 'DEPARTED', xPercent: 87, yPercent: 83.26 },
+
         ];
 
                // Train icon

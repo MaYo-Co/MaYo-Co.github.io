@@ -172,7 +172,7 @@
         </select>
     </div>
     <div id="currentTime" style="color: orange; font-weight: bold;"></div>
-    <div id="trainData">Train data will appear here.</div>
+    <div id="trainData">METRO APOLOGISES</div>
 
     <div id="map-container">
         <div id="map"></div>
@@ -233,34 +233,11 @@
         });
 
 
-        // // Function to resize the map and fit bounds
-        // function resizeMap() {
-        //     const windowAspectRatio = window.innerWidth / window.innerHeight;
-        //     const imageAspectRatio = imageWidth / imageHeight;
-
-        //     if (windowAspectRatio > imageAspectRatio) {
-        //         map.fitBounds([[0, 0], [imageHeight, imageHeight * windowAspectRatio]]);
-        //     } else {
-        //         map.fitBounds([[0, 0], [imageWidth / windowAspectRatio, imageWidth]]);
-        //     }
-        //     map.invalidateSize();
-        // }
-
-        // // Use ResizeObserver to detect changes in the map container size
-        // const mapContainer = document.getElementById('map-container');
-        // const resizeObserver = new ResizeObserver(() => {
-        //     resizeMap();
-        // });
-        // resizeObserver.observe(mapContainer);
-
-        // // Initial call to fit the map correctly
-        // resizeMap();
-
         // Station coordinate lookup table
         const stationCoordinates = [
             { tlc: 'SJM', lastEventLocation: 'St James Platform 1', lastEvent: 'ARRIVED', xPercent: 33.55, yPercent: 60.7 },
             { tlc: 'MTW', lastEventLocation: 'Monument Platform 4', lastEvent: 'ARRIVED', xPercent: 36.1, yPercent: 60.7 },
-            { tlc: 'MAN', lastEventLocation: 'Manors Platform 1', lastEvent: 'ARRIVED', xPercent: 44.8, yPercent: 60.7 },
+           { tlc: 'MAN', lastEventLocation: 'Manors Platform 1', lastEvent: 'ARRIVED', xPercent: 44.8, yPercent: 60.7 },
             { tlc: 'BYK', lastEventLocation: 'Byker Platform 1', lastEvent: 'ARRIVED', xPercent: 49.3, yPercent: 60.7 },
             { tlc: 'CRD', lastEventLocation: 'Chillingham Road Platform 1', lastEvent: 'ARRIVED', xPercent: 53.85, yPercent: 60.7 },
             { tlc: 'WKG', lastEventLocation: 'Walkergate Platform 1', lastEvent: 'ARRIVED', xPercent: 58.2, yPercent: 60.7 },
@@ -758,11 +735,10 @@
 
 <button id="backToIndex">Back to Index</button>
 <script>
-    // ... Your existing JavaScript ...
 
     // Button to go back to index page
     document.getElementById("backToIndex").addEventListener("click", function() {
-        window.location.href = "index.html"; // Replace "index.html" with the correct URL of your index page
+        window.location.href = "index.html";
     });
 
 </script>

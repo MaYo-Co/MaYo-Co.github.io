@@ -716,26 +716,29 @@
             
             // Display train markers
             uniqueTrains.forEach(train => {
-            if (train.x && train.y) {
-                let iconToUse = trainIcon; // Default icon
+                if (train.x && train.y) {
+                    let iconToUse = trainIcon; // Default icon
 
-                // Check for special train numbers
-                if (currentDay === 0 || currentDay === 6)
-                    if (train.trn === '102' || train.trn === '104' || train.trn === '106' || train.trn === '108' || train.trn === '121',
-                       train.trn === '123' || train.trn === '125' || train.trn === '127' || train.trn === '999' || train.trn === '998') {
-                        iconToUse = specialTrainIcon;
-                    } else {
-                     if (train.trn === '102' || train.trn === '104' || train.trn === '106' || train.trn === '121' || train.trn === '123',
-                           train.trn === '125' || train.trn === '997' || train.trn === '996' || train.trn === '999' || train.trn === '998') {
+                    // Check for special train numbers
+                    const currentDay = new Date().getDay(); // Get the current day (0=Sun, 6=Sat)
+
+                    if (currentDay === 0 || currentDay === 6) { // If current day is Saturday or Sunday
+                        if (train.trn === '102' || train.trn === '104' || train.trn === '106' || train.trn === '108' || train.trn === '121' ||
+                            train.trn === '123' || train.trn === '125' || train.trn === '127' || train.trn === '999' || train.trn === '998') {
                             iconToUse = specialTrainIcon;
+                        }
+                    } else { // If current day is a weekday (Monday-Friday)
+                        if (train.trn === '102' || train.trn === '104' || train.trn === '106' || train.trn === '121' || train.trn === '123' ||
+                               train.trn === '125' || train.trn === '997' || train.trn === '996' || train.trn === '999' || train.trn === '998') {
+                            iconToUse = specialTrainIcon;
+                        }
                     }
-                
-                L.marker([train.y, train.x], { icon: iconToUse })
-                    .addTo(map)
-                    .bindPopup(`Train ${train.trn} at ${train.lastEventLocation}`);
-            }
-                    });
+                    
+                    L.marker([train.y, train.x], { icon: iconToUse })
+                        .addTo(map)
+                        .bindPopup(`Train ${train.trn} at ${train.lastEventLocation}`);
                 }
+            });
 
         // Fetch and display train data
         getAllTrainData();

@@ -721,11 +721,11 @@
             
                     // Use already declared currentDay
                     if (currentDay === 0 || currentDay === 6) { // Saturday or Sunday
-                        if (['102', '104', '106', '108', '121', '123', '125', '127', '999', '998'].includes(train.trn)) {
+                        if (['102', '104', '106', '121', '123', '125', '997', '996', '999', '998'].includes(train.trn)) {
                             iconToUse = specialTrainIcon;
                         }
                     } else { // Weekday
-                        if (['102', '104', '106', '121', '123', '125', '997', '996', '999', '998'].includes(train.trn)) {
+                        if (['103', '104', '105', '108', '120', '121', '123', '127', '128', '126', '129'].includes(train.trn)) {
                             iconToUse = specialTrainIcon;
                         }
                     }

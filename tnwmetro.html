@@ -607,7 +607,7 @@
 
                // Train icon
                const trainIcon = L.icon({
-            iconUrl: 'https://icon-library.com/images/train-icon-free/train-icon-free-1.jpg',
+            iconUrl: 'Assets/old.png',
             iconSize: [32, 32],
             iconAnchor: [16, 16],
             popupAnchor: [0, -16]
@@ -615,7 +615,7 @@
 
                 // Special train icons
                 const specialTrainIcon = L.icon({
-            iconUrl: 'https://icon-library.com/images/train-icon/train-icon-28.jpg',
+            iconUrl: 'Assets/yellow.png',
             iconSize: [32, 32],
             iconAnchor: [16, 16],
             popupAnchor: [0, -16]
@@ -725,7 +725,7 @@
                             iconToUse = specialTrainIcon;
                         }
                     } else { // Weekday
-                        if (['103', '104', '105', '108', '120', '121', '123', '127', '128', '126', '129', '110'].includes(train.trn)) {
+                        if (['102','103', '104', '105', '108', '120', '121', '123', '127', '128', '126', '129', '110', '112'].includes(train.trn)) {
                             iconToUse = specialTrainIcon;
                         }
                     }
